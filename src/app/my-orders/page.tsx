@@ -29,7 +29,7 @@ export default function MyOrdersPage() {
       stopOrders();
       stopOrders = () => {};
       setUser(next);
-      if (!next || next.isAnonymous === false) {
+      if (!next) {
         if (!next) setOrders([]);
         setLoading(false);
         return;
