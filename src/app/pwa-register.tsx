@@ -90,7 +90,7 @@ export default function PwaRegister() {
     const onController = () => window.location.reload();
     navigator.serviceWorker.addEventListener("controllerchange", onController, { once: true });
     worker.postMessage({ type: "SKIP_WAITING" });
-    window.setTimeout(() => { if (refreshing) window.location.reload(); }, 2000);
+    window.setTimeout(() => window.location.reload(), 2500);
   }
 
   return <>
