@@ -5,17 +5,17 @@ export default function OfflinePage() {
     <main className="orderPage">
       <div className="orderWrap">
         <div className="orderHeader">
-          <Link href="/" className="logo"><span className="logoMark">P</span><span>The Plug</span></Link>
+          <Link href="/" className="logo"><span className="logoMark">S</span><span>Strata Sa’o Bitsa</span></Link>
         </div>
         <section className="orderCard confirm">
-          <div className="confirmIcon">📶</div>
+          <div className="confirmIcon" aria-hidden="true">📶</div>
           <span className="kicker">Offline mode</span>
-          <h1>The Plug is still here.</h1>
-          <p>The app shell and public finds you have already loaded may remain available on this device. Saved information can be out of date.</p>
-          <p>Prices, stock and offers can change while you are offline. Requests, account updates and messages are not sent until a connection is available and The Plug confirms the action.</p>
+          <h1>You’re temporarily offline.</h1>
+          <p>You can still view pages already saved on this device, but menu availability and prices may be out of date.</p>
+          <p>Orders, order updates and messages cannot be confirmed until you reconnect. Please do not assume an order was received unless the app shows a confirmation.</p>
           <div className="actions centered">
-            <Link className="button buttonPrimary" href="/request">Open request</Link>
-            <Link className="button buttonLight" href="/">Open The Plug</Link>
+            <Link className="button buttonPrimary" href="/order">Start an order</Link>
+            <Link className="button buttonLight" href="/">Return home</Link>
           </div>
         </section>
       </div>
