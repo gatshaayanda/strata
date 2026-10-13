@@ -20,7 +20,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/strata-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "maskable" }
     ],
     shortcuts: [
-      { name: "Order on WhatsApp", short_name: "Order", description: "Contact Strata to check today's menu and place an order", url: "/#food", icons: [{ src: "/strata-icon.svg", sizes: "any", type: "image/svg+xml" }] },
+      { name: "Start an order", short_name: "Order", description: "Send Strata an order request", url: "/order", icons: [{ src: "/strata-icon.svg", sizes: "any", type: "image/svg+xml" }] },
       { name: "Find a location", short_name: "Locations", description: "Check Gaborone and Francistown service", url: "/#locations", icons: [{ src: "/strata-icon.svg", sizes: "any", type: "image/svg+xml" }] }
     ]
   };
