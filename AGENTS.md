@@ -19,13 +19,13 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 - Storefront: `src/app/page.tsx`; styling: `src/app/globals.css`; committed visual assets in `public/strata-assets/`.
 - Order request: `src/app/order/page.tsx`. It silently uses Firebase Anonymous Auth, writes customer requests to `orderRequests`, and displays a reference only after the Firestore write resolves. This is a request, not confirmed checkout/payment.
 - Customer account: `src/app/account/page.tsx`. It lists only the current UID's requests with live status/message updates and offers optional Google linking to the anonymous session.
-- Staff operations: `src/app/operations/page.tsx`. Google sign-in is checked against `admins/{uid}`; only owner/staff roles can read/update the queue.
+- Staff operations: `/operations` (and `/admin` redirects there) uses a server-checked access word at `src/app/api/operations-login/route.ts`, then a Firebase custom token and `admins/{uid}` role check. The server creates its fixed temporary operations role document; clients cannot write admin roles.
 - Data helpers: `src/lib/firebase/strata-orders.ts`; Firebase client and offline Firestore cache: `src/lib/firebase/client.ts`.
-- Firestore rules: `firestore.rules` is now Strata-only. Customers can create/read their own request, staff can update status/message, and all other collections are denied. Admin roles must be provisioned manually in Firebase Console. `storage.rules` denies all client storage access until a Strata upload workflow is deliberately designed.
+- Firestore rules: `firestore.rules` is Strata-only. Customers can create/read their own request; owner/staff can update status/message; all other collections are denied. The server-side Operations endpoint provisions its fixed role document with Firebase Admin. Firebase Storage client rules remain deny-all; media upload is intended to use UploadThing, not Firebase Storage.
 - Firebase client configuration is documented in `.env.example`; real Web App values must be configured in the deployment environment. Do not guess credentials.
-- PWA: `src/app/pwa-register.tsx`, `src/app/pwa.css`, `src/app/manifest.ts`, `public/manifest.webmanifest`, `public/sw.js`. Public homepage, order-form shell and visual assets are cached. Customer records/admin pages are not cached. Order submission/history require connectivity; offline submission is explicitly blocked.
-- Inherited account page has been replaced; `src/middleware.ts` still redirects legacy Plug-only request/admin routes. The Strata operations queue is at `/operations`, not `/admin`.
-- Inherited API endpoints for sourcing requests, notifications, journey analytics, messaging config, temporary operations-word login and UploadThing were removed. A type-only legacy UploadThing helper remains for compile compatibility, but its API route is not present.
+- PWA: `src/app/pwa-register.tsx`, `src/app/pwa.css`, `src/app/manifest.ts`, `public/manifest.webmanifest`, `public/sw.js`. Public homepage, order-form shell, five local JPEGs and `public/strata-assets/stat.mp4` are precached under `strata-shell-v2`; public same-origin images/videos can also be cached after being viewed. Customer records and operations pages are not cached. Order submission/history require connectivity; offline submission is explicitly blocked.
+- The customer account page has been replaced. Legacy Plug request/admin subroutes remain redirected; `/admin` is now an alias redirecting to Strata `/operations`.
+- The Strata server endpoint `/api/operations-login` checks `STRATA_OPERATIONS_WORD` and issues a Firebase custom token using `FIREBASE_ADMIN_KEY`. UploadThing handler is enabled at `/api/uploadthing`; configure `UPLOADTHING_TOKEN` before expecting uploads to work. The endpoint currently accepts the legacy image/PDF router limits; no upload UI or upload persistence workflow is yet part of the customer ordering journey.
 - Removed inherited Firebase rules deployment workflow and scheduled Plug production reminder workflow. Workflow run `38371808720` failed while writing the Firebase service account; the deployment step was skipped. No Firebase rules deployment was performed by that run.
 - Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or automatic outbound WhatsApp messaging. Do not describe these as implemented.
 - Missing visual asset at prior copy checkpoint: `image_987b17.png`.
@@ -35,9 +35,10 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 1. Configure the actual Web App values for project `strata-6706b` using `NEXT_PUBLIC_FIREBASE_*` variables documented in `.env.example`.
 2. Enable Anonymous and Google providers in Firebase Authentication and add the deployed hostname to authorised domains.
 3. Publish `firestore.rules`.
-4. Provision `admins/{uid}` manually with `role: "owner"` or `role: "staff"`; clients must never be able to create/change roles.
-5. Test guest request → reference → My Requests → staff status/message update → customer live update.
-6. Test offline shell/form reopening separately from online submission; test Android and iOS installation separately.
+4. Configure server-only `FIREBASE_ADMIN_KEY` for the same Firebase project and set a private `STRATA_OPERATIONS_WORD` in the deployment environment. Never expose either through a `NEXT_PUBLIC_*` variable.
+5. Configure `UPLOADTHING_TOKEN` if/when the UploadThing upload UI is added.
+6. Test guest request → reference → My Requests → Operations access-word login → status/message update → customer live update.
+7. Test offline shell/form reopening and all precached JPEG/video assets separately from online submission; test Android and iOS installation separately.
 
 ## Next acceptance criteria
 - Firebase setup complete and owner account provisioned.
