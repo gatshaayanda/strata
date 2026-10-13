@@ -4,8 +4,10 @@ import path from "node:path";
 const root = process.cwd();
 const criticalFiles = [
   "src/app/page.tsx",
+  "src/app/order/page.tsx",
+  "src/app/account/page.tsx",
+  "src/app/operations/page.tsx",
   "src/app/layout.tsx",
-  "src/app/manifest.ts",
   "src/app/pwa-register.tsx",
   "public/manifest.webmanifest",
   "public/sw.js",
@@ -56,4 +58,4 @@ if (failures.length) {
   process.exit(1);
 }
 console.log("STRATA IDENTITY VERIFIED — active storefront and PWA shell use Strata branding and an isolated cache.");
-console.log("Note: legacy inherited account/admin routes still require separate replacement before operations launch.");
+console.log("Note: /admin remains redirected; the Strata-native staff queue is available at /operations after Firebase setup.");
