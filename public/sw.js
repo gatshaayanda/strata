@@ -97,7 +97,10 @@ async function createRangeResponse(response, rangeHeader) {
   const [startText, endText] = rangeHeader.slice(6).split("-", 2);
   let start = startText ? Number.parseInt(startText, 10) : 0;
   let end = endText ? Number.parseInt(endText, 10) : size - 1;
-  if (!startText && endText) start = Math.max(0, size - Number.parseInt(endText, 10));
+  if (!startText && endText) {
+    start = Math.max(0, size - Number.parseInt(endText, 10));
+    end = size - 1;
+  }
   end = Math.min(end, size - 1);
   if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start > end || start >= size) {
     return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
