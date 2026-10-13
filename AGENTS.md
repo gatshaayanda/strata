@@ -41,7 +41,7 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 7. Test offline shell/form reopening and all precached JPEG/video assets separately from online submission; test Android and iOS installation separately.
 
 ## Next acceptance criteria
-- Firebase setup complete and owner account provisioned.
+- Firebase web configuration and Firestore rules are set; the private Operations word and matching Firebase Admin service account are configured server-side.
 - Identity check, typecheck, lint and production build pass on the exact pushed commit.
 - Deployed customer request can be created, read only by its owner, and updated only by staff.
 - Unauthorized users cannot read the queue or change status; customer cannot edit/delete a saved request.
