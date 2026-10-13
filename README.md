@@ -1,57 +1,49 @@
-# The Plug
+# Strata Sa’o Bitsa
 
-**The Plug — Sneakers & Apparel Sourcing**
+**COME GET HOOKED.** A mobile-first food storefront and progressive web app for Strata Sa’o Bitsa in Botswana, serving the intended markets of Gaborone and Francistown.
 
-Mobile-first sourcing and customer operations PWA for sneaker and apparel requests in Botswana.
+## Current checkpoint
 
-## Customer flow
-Home → Catalogue → Request a product → Request tracking → Customer account
+The active homepage has been rebranded for Strata, uses the committed photography/video assets, and gives customers direct access to the business by phone or WhatsApp. The website does not require installation to use. PWA registration starts on page load; installation is an optional action, with platform-specific help when the browser does not provide a native prompt.
 
-Customers can browse available products, ask The Plug to source a specific sneaker or apparel item, follow request progress, and message the business.
+The current public ordering handoff asks the business to confirm the current menu, prices, availability and delivery options. It does **not** claim that a web order was saved, a payment was taken, or delivery was booked.
 
-## Operations
-/admin is protected by Firebase Authentication plus admins/{uid} with role owner/staff.
+## Visual assets
+
+- `public/strata-assets/fish.jpeg`
+- `public/strata-assets/groupline.jpeg`
+- `public/strata-assets/groupline1.jpeg`
+- `public/strata-assets/customer.jpeg`
+- `public/strata-assets/customers.jpeg`
+- `public/strata-assets/stat.mp4`
+
+The separately mentioned `image_987b17.png` was not found in Downloads at the asset-copy checkpoint and has not been added.
 
 ## Development
+
+```bash
 npm install
 npm run dev
+```
 
 Quality gates:
+
+```bash
+npm run verify:identity
 npx tsc --noEmit
 npm run lint
-npm run verify:identity
 npm run build
+```
 
-See AGENTS.md for the implementation contract.
+## Next implementation gates
 
-## Notifications
-Customer and operations notifications use Firebase Cloud Messaging. Notification permission is requested only from the user's explicit settings action.
+1. Inspect and replace inherited customer/account/admin routes; do not expose The Plug operations UI as Strata.
+2. Confirm the real menu, prices, hours, branch/service-point details, delivery zones and delivery charges.
+3. Implement guest cart/checkout, server-validated order totals, durable order records, customer confirmation and an owner/staff fulfilment queue.
+4. Confirm Firebase project setup, Authentication needs, Firestore/Storage rules and secure server-side authorization before enabling persistence.
+5. Add cash and only those online payment methods that are actually configured and verified.
+6. Test the manifest, service-worker registration/update/cache isolation, Android install, iOS Add to Home Screen, embedded-browser handoff, and deployed behavior separately.
 
-## Customer journey analytics
+## Release boundary
 
-The admin dashboard records server-side journey events for request-flow entry, account confirmation, request submission, sharing and invites, notification choices, and external catalogue/Instagram visits. Admin activity is excluded from customer journey counts. Event access is governed by Firestore rules; review the rules and analytics route together when changing event names or payloads.
-
-## Storefront launch QA
-
-Run this checklist against the exact preview commit before merging or announcing a public launch.
-
-### Customer
-- [ ] Open the home page on mobile and desktop; confirm published, in-date public finds/offers render with their images and prices.
-- [ ] Save a find or offer, open Saved Finds, refresh, and confirm the snapshot remains available.
-- [ ] Remove a saved item and confirm it disappears from Saved Finds; confirm saving it again works.
-- [ ] Start a request from a product card and confirm the product title, listed-price snapshot, and item type carry into the form and submitted private request.
-- [ ] Confirm request copy makes clear that submitting is not payment, a stock reservation, or a confirmed sale.
-- [ ] Confirm a request is visible in the customer tracking flow and the admin queue after submission.
-- [ ] Test source-request entry, navigation, install/PWA behavior, and browser back on a phone-sized viewport.
-
-### Admin
-- [ ] Sign in as an authorized admin; confirm a non-admin account cannot access admin data or write storefront content.
-- [ ] Create a draft find and a draft offer with category, price, image, and display order; confirm drafts do not appear publicly.
-- [ ] Edit the title, price, category, image, audience, status, and active dates; verify each saved value after refresh.
-- [ ] Publish an in-date public item and confirm it appears on the storefront; pause/archive/delete it and verify the expected public behavior.
-- [ ] Confirm image upload, saved image URL, preview, replacement, and removal work with the configured Firebase Storage rules.
-- [ ] Open journey analytics and compare 7/30/90-day and all-time views; verify product interest, bookmarks, and monthly demand signals.
-- [ ] Treat analytics as interaction signals, not unique people, paid orders, confirmed sales, or proof of stock.
-
-### Release boundary
-Saved Finds are stored in the current browser/device and are not synced across devices. Product requests are purchase intent only; Frank confirms availability, final price, and payment directly. Do not describe this release as online payment checkout.
+No production deployment is implied by a GitHub commit. The current build and live website still require verification in the local workspace and on the actual deployment. PWA installation is optional; ordering functionality must remain available in the browser.
