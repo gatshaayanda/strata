@@ -123,9 +123,9 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if validOrder()
-        && request.resource.data.keys().hasAll(['customerId'])
-        && isOwner(request.resource.data.customerId);
+      // Order creation must pass through /api/orders, which verifies the Firebase ID token
+      // and recalculates item prices from current owner-published menu records.
+      allow create: if false;
 
       allow read: if isAdmin()
         || (
