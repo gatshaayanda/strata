@@ -15,7 +15,7 @@ function adminApp() {
   let serviceAccount: Record<string, unknown>;
   try { serviceAccount = JSON.parse(raw) as Record<string, unknown>; }
   catch { throw new Error("ORDER_SERVICE_CREDENTIALS_INVALID"); }
-  return initializeApp({ credential: cert(serviceAccount as Parameters<typeof cert>[0]) });
+  const targetProject = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;\n  if (!targetProject || process.env.FIREBASE_PROJECT_ID !== targetProject || serviceAccount.project_id !== targetProject) throw new Error("ORDER_SERVICE_PROJECT_MISMATCH");\n  return initializeApp({ credential: cert(serviceAccount as Parameters<typeof cert>[0]), projectId: targetProject });
 }
 
 function validText(value: unknown, max: number, required = false): value is string {
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     if (message === "ORDER_SERVICE_NOT_CONFIGURED") return NextResponse.json({ error: "Ordering is not fully connected yet. Your details have not been sent; please try again later." }, { status: 503 });
-    if (message === "ORDER_SERVICE_CREDENTIALS_INVALID") return NextResponse.json({ error: "Ordering is temporarily unavailable. Your details have not been sent." }, { status: 503 });
+    if (message === "ORDER_SERVICE_CREDENTIALS_INVALID" || message === "ORDER_SERVICE_PROJECT_MISMATCH") return NextResponse.json({ error: "Ordering is temporarily unavailable. Your details have not been sent." }, { status: 503 });
     if (message === "ORDER_REFERENCE_CONFLICT") return NextResponse.json({ error: "This order reference is already in use. Refresh the page and try again." }, { status: 409 });
     if (/expired|token|authentication/i.test(message)) return NextResponse.json({ error: "Your order session expired. Please retry." }, { status: 401 });
     console.error("[Strata] order submission failed:", message || "unknown error");
