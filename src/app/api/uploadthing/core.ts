@@ -2,8 +2,8 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
-// Legacy form components still type-check while the UploadThing route is disabled.
-// Strata's active customer journey does not accept uploads yet.
+// UploadThing is enabled for future Strata image/PDF attachment workflows.
+// No customer-facing upload form is wired into the ordering journey yet.
 export const ourFileRouter = {
   fileUploader: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
