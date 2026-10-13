@@ -1,84 +1,154 @@
 "use client";
-import Link from "next/link";
-import {FormEvent,useEffect,useMemo,useState} from "react";
-import {signInAnonymously,onAuthStateChanged,type User} from "firebase/auth";
-import {createFoodOrder,getCustomerProfile,getMenuItems,readCachedMenuItems,saveCustomerProfile,type MenuItem} from "@/lib/firebase/data";
-import {auth} from "@/lib/firebase/client";
-import NotificationSettings from "@/components/NotificationSettings";
-function gaboroneDateKey(date=new Date()){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Africa/Gaborone",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);return `${parts.find(p=>p.type==="year")?.value}-${parts.find(p=>p.type==="month")?.value}-${parts.find(p=>p.type==="day")?.value}`}
-function weekdayForDate(dateKey:string){return new Intl.DateTimeFormat("en-US",{weekday:"long",timeZone:"Africa/Gaborone"}).format(new Date(`${dateKey}T12:00:00`))}
-function addGaboroneDays(dateKey:string,offset:number){const date=new Date(`${dateKey}T12:00:00`);date.setUTCDate(date.getUTCDate()+offset);return `${date.getUTCFullYear()}-${String(date.getUTCMonth()+1).padStart(2,"0")}-${String(date.getUTCDate()).padStart(2,"0")}`}
-function orderUnitPrice(item:MenuItem,quantity:number){return item.friendPrice!==undefined&&quantity>=2?item.friendPrice:item.price}
-function gaboroneNowDate(){return gaboroneDateKey()}function gaboroneNowTime(){const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Gaborone",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());const get=(type:string)=>parts.find(p=>p.type===type)?.value??"";return `${get("hour")}:${get("minute")}`}
-function gaboroneScheduledIso(value:string){return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)?value+":00+02:00":value}
-export default function OrderForm(){
- const today=gaboroneDateKey();
- const[menu,setMenu]=useState<MenuItem[]>([]),[menuLoaded,setMenuLoaded]=useState(false),[menuUnavailable,setMenuUnavailable]=useState(false);
- const[quantities,setQuantities]=useState<Record<string,number>>({}),[scheduledDate,setScheduledDate]=useState(""),[scheduledTime,setScheduledTime]=useState(""),[selectedDate,setSelectedDate]=useState(today);
- const[submitted,setSubmitted]=useState(false),[reference,setReference]=useState(""),[pendingSync,setPendingSync]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(""),[user,setUser]=useState<User|null>(null),[saved,setSaved]=useState({name:"",phone:"",location:"",notes:""});
- useEffect(()=>{const requested=new URLSearchParams(window.location.search).get("date");if(requested&&/^\d{4}-\d{2}-\d{2}$/.test(requested)&&requested>=today){setSelectedDate(requested);setScheduledDate(requested)}} , [today]);
- useEffect(()=>{const unsub=onAuthStateChanged(auth,async next=>{setUser(next);if(next){try{const profile=await getCustomerProfile(next.uid);if(profile)setSaved({name:profile.name,phone:profile.phone,location:profile.preferredDeliveryLocation,notes:profile.notes})}catch(error){console.warn("The Plug customer profile unavailable",error)}}});void getMenuItems().then(setMenu).catch(()=>{const cached=readCachedMenuItems();if(cached.length){setMenu(cached);setMenuUnavailable(false)}else setMenuUnavailable(true)}).finally(()=>setMenuLoaded(true));return unsub},[]);
- const visibleMenu=useMemo(()=>{const legacyToday=menu.filter(item=>item.available&&item.section==="deal"&&item.category.trim().toLowerCase()==="deal"&&!item.id.startsWith("deal-"));const daily=menu.filter(item=>item.available&&item.section==="daily"&&(item.days??[]).includes(weekdayForDate(selectedDate)));const deals=menu.filter(item=>item.available&&(item.section==="deal"||(!item.section&&item.category.toLowerCase()==="deal"))&&!legacyToday.some(service=>service.id===item.id));return [...daily,...(selectedDate===today?legacyToday:[]),...deals].filter((item,index,array)=>array.findIndex(candidate=>candidate.id===item.id)===index)},[menu,selectedDate,today]);
- const nextPublishedDate=useMemo(()=>{for(let offset=1;offset<=7;offset++){const candidate=addGaboroneDays(selectedDate,offset);if(menu.some(item=>item.available&&item.section==="daily"&&(item.days??[]).includes(weekdayForDate(candidate))))return candidate}return null},[menu,selectedDate]);
 
- const selected=useMemo(()=>menu.filter(item=>(quantities[item.id]??0)>0).map(item=>({...item,quantity:quantities[item.id]??0})),[menu,quantities]);
- const unavailableSelected=useMemo(()=>selected.filter(item=>!visibleMenu.some(availableItem=>availableItem.id===item.id)),[selected,visibleMenu]);
- const total=selected.filter(item=>!unavailableSelected.some(unavailable=>unavailable.id===item.id)).reduce((sum,item)=>sum+orderUnitPrice(item,item.quantity)*item.quantity,0);
- function change(id:string,delta:number){setQuantities(current=>({...current,[id]:Math.max(0,(current[id]??0)+delta)}))}
- function onScheduledDateChange(value:string){setScheduledDate(value);setSelectedDate(value)}
- async function submit(event:FormEvent<HTMLFormElement>){
-  event.preventDefault();if(busy)return;if(!selected.length){setError(menuUnavailable||!visibleMenu.length?"No menu items are currently published for this date. Choose another published date or call The Plug on 76425849 / 76769834.":"Choose at least one food item.");return}if(unavailableSelected.length){setError("One or more selected items are not published for "+weekdayForDate(selectedDate)+". Remove them or choose a date when they are available.");return}setBusy(true);setError("");
-  const form=new FormData(event.currentTarget),name=String(form.get("customerName")??"").trim(),phone=String(form.get("phone")??"").trim(),mode=String(form.get("mode")??"pickup") as "pickup"|"delivery",formDate=String(form.get("scheduledDate")??scheduledDate),formTime=String(form.get("scheduledTime")??scheduledTime),scheduledFor=gaboroneScheduledIso(formDate&&formTime?`${formDate}T${formTime}`:""),deliveryLocation=String(form.get("deliveryLocation")??"").trim(),instructions=String(form.get("instructions")??"").trim();
-  if(!name||!phone||!formDate||!formTime||!scheduledFor){setError("Please choose the date and time you need the order.");setBusy(false);return}
-  const scheduledMs=new Date(scheduledFor).getTime();if(!Number.isFinite(scheduledMs)||scheduledMs<Date.now()){setError("Choose a future time for your order.");setBusy(false);return}
-  if(mode==="delivery"&&!deliveryLocation){setError("Add your delivery location or landmark.");setBusy(false);return}
-  try{
-   let customer=user;
-   if(!customer)customer=(await signInAnonymously(auth)).user
-   const order={customerId:customer.uid,createdAt:new Date().toISOString(),customerName:name,phone,mode,scheduledFor,deliveryLocation,instructions,items:selected.map(({name,price,friendPrice,quantity})=>({name,price:orderUnitPrice({name,price,friendPrice} as MenuItem,quantity),quantity})),total,status:"New" as const};
-   const offline=!navigator.onLine;const{id,writePromise}=createFoodOrder(order);setReference(id);try{window.localStorage.setItem(`the-plug-order-${id}`,JSON.stringify({...order,id}));window.localStorage.setItem(`the-plug-pending-order-notification-${id}`,"1")}catch{}
-   // Customer profile persistence is a convenience, never a reason to reject an order.
-   // Firestore may deny/read-fail an empty profile while the order write itself is valid.
-   if(offline){void writePromise.catch(console.error);setPendingSync(true)}else{await writePromise;setPendingSync(false);try{const idToken=await customer.getIdToken();const notificationResponse=await fetch("/api/notifications/order-created",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+idToken},body:JSON.stringify({orderId:id})});if(notificationResponse.ok)window.localStorage.removeItem(`the-plug-pending-order-notification-${id}`)}catch(notificationError){console.warn("The Plug new-order notification request failed",notificationError)}}
-   if(customer){
-    const now=new Date().toISOString();
-    void getCustomerProfile(customer.uid)
-      .catch(profileError=>{console.warn("The Plug customer profile read unavailable",profileError);return null})
-      .then(existing=>{
-       const profile={uid:customer.uid,name,email:customer.email??existing?.email??"",phone,preferredDeliveryLocation:deliveryLocation||existing?.preferredDeliveryLocation||"",notes:instructions||existing?.notes||"",createdAt:existing?.createdAt??now,updatedAt:now};
-       return saveCustomerProfile(profile);
-      })
-      .catch(profileError=>console.warn("The Plug customer profile save unavailable",profileError));
-   }
-   setSubmitted(true);event.currentTarget.reset();
-  }catch(error){console.error("The Plug order submission failed",error);setError("The order could not be confirmed online. Please check the connection and try again, or call The Plug on 76425849 / 76769834.")}finally{setBusy(false)}
- }
- if(submitted)return (
-  <main className="orderPage">
-   <div className="orderWrap">
-    <div className="orderCard confirm">
-     <div className="confirmIcon">🍔</div>
-     <span className="kicker">{pendingSync?"Offline save":"Order submitted"}</span>
-     <h1>{pendingSync?"Saved on this phone.":"Order received."}</h1>
-     <p>{pendingSync?"Your order is waiting to synchronize. Reconnect this device so it can reach The Plug. Until then, the kitchen has not received it.":"Your order was written to the The Plug order queue. The kitchen can review it and contact you if needed."}</p>
-     <strong>Reference #{reference.slice(0,8).toUpperCase()}</strong>
-     <NotificationSettings/>
-     <div className="actions centered">
-      <div>
-       <p className="orderTruth"><strong>Your order is saved with The Plug.</strong> You can follow it from <Link href="/account">My The Plug</Link> when this guest session is available.</p>
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { getIdToken, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
+import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
+import { subscribeToMenuItems, type MenuItem } from "@/lib/firebase/data";
+
+type Branch = "Gaborone" | "Francistown";
+type Mode = "pickup" | "delivery";
+type Cart = Record<string, number>;
+const money = (value: number) => "P" + value.toFixed(2);
+
+export default function OrderForm() {
+  const [branch, setBranch] = useState<Branch>("Gaborone");
+  const [mode, setMode] = useState<Mode>("pickup");
+  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [cart, setCart] = useState<Cart>({});
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [menuError, setMenuError] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [location, setLocation] = useState("");
+  const [scheduledFor, setScheduledFor] = useState("ASAP");
+  const [instructions, setInstructions] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const [confirmedOrder, setConfirmedOrder] = useState<{ id: string; total: number } | null>(null);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+  const orderIdRef = useRef("");
+
+  useEffect(() => {
+    const initialBranch = new URLSearchParams(window.location.search).get("branch");
+    if (initialBranch === "Gaborone" || initialBranch === "Francistown") setBranch(initialBranch);
+    const stopAuth = onAuthStateChanged(auth, setUser);
+    if (!hasFirebaseWebConfig) {
+      setMenuLoading(false);
+      setMenuError("The live menu is not connected in this environment yet.");
+      return () => stopAuth();
+    }
+    const stopMenu = subscribeToMenuItems(
+      items => { setMenu(items.filter(item => item.available)); setMenuLoading(false); setMenuError(""); },
+      () => { setMenuLoading(false); setMenuError("We couldn’t load the menu. Check your connection and retry."); }
+    );
+    return () => { stopAuth(); stopMenu(); };
+  }, []);
+
+  const cartItems = useMemo(() => menu.filter(item => (cart[item.id] || 0) > 0).map(item => ({ item, quantity: cart[item.id] })), [menu, cart]);
+  const displayedTotal = cartItems.reduce((sum, entry) => sum + entry.item.price * entry.quantity, 0);
+
+  function changeQuantity(id: string, delta: number) {
+    setCart(current => {
+      const next = { ...current };
+      const quantity = (next[id] || 0) + delta;
+      if (quantity <= 0) delete next[id];
+      else next[id] = Math.min(20, quantity);
+      return next;
+    });
+    setMessage("");
+    setConfirmedOrder(null);
+    orderIdRef.current = "";
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy) return;
+    setMessage("");
+    if (!hasFirebaseWebConfig) { setMessage("Ordering is not connected in this environment yet. Nothing has been sent."); return; }
+    if (!cartItems.length) { setMessage("Add at least one item from the current menu."); return; }
+    if (!name.trim() || !phone.trim()) { setMessage("Add your name and contact number."); return; }
+    if (mode === "delivery" && !location.trim()) { setMessage("Add a delivery address or nearby landmark."); return; }
+
+    setBusy(true);
+    try {
+      let currentUser = auth.currentUser;
+      if (!currentUser) currentUser = (await signInAnonymously(auth)).user;
+      setUser(currentUser);
+      const token = await getIdToken(currentUser);
+      if (!orderIdRef.current) orderIdRef.current = crypto.randomUUID();
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: orderIdRef.current,
+          branch,
+          customerName: name.trim(),
+          phone: phone.trim(),
+          mode,
+          scheduledFor: scheduledFor.trim() || "ASAP",
+          deliveryLocation: mode === "delivery" ? location.trim() : "",
+          instructions: instructions.trim(),
+          items: cartItems.map(({ item, quantity }) => ({ menuItemId: item.id, quantity }))
+        })
+      });
+      const result = await response.json().catch(() => ({})) as { orderId?: string; total?: number; error?: string };
+      if (!response.ok || !result.orderId || typeof result.total !== "number") {
+        setMessage(result.error || "We couldn’t confirm your order. Your details remain on this page; please retry.");
+        return;
+      }
+      setConfirmedOrder({ id: result.orderId, total: result.total });
+      setMessage("Your order was saved. The team still needs to accept it and confirm fulfilment.");
+      setCart({});
+    } catch {
+      setMessage("We couldn’t confirm your order. Keep this page open and retry; do not assume it was received.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (confirmedOrder) {
+    return <main className="strataCheckoutPage"><div className="strataCheckoutWrap"><Link href="/" className="strataBrand"><span className="strataBrandMark">S</span><span><strong>STRATA SA’O BITSA</strong><small>COME GET HOOKED.</small></span></Link><section className="strataConfirmation"><span className="strataConfirmationMark" aria-hidden="true">✓</span><p className="strataEyebrow">ORDER RECEIVED</p><h1>YOU’RE ON<br /><em>THE LIST.</em></h1><p>Your order details have been saved. The team must still accept the order and confirm the fulfilment details.</p><div className="strataOrderReference"><span>ORDER REFERENCE</span><strong>{confirmedOrder.id}</strong><span>Item total: {money(confirmedOrder.total)}. Delivery charges, if any, are not included yet.</span></div><div className="strataCheckoutActions"><Link href="/my-orders" className="strataButton">Track my order <span aria-hidden="true">→</span></Link><Link href="/" className="strataCheckoutBack">Back to home</Link></div></section></div></main>;
+  }
+
+  return (
+    <main className="strataCheckoutPage">
+      <div className="strataCheckoutWrap">
+        <header className="strataCheckoutHeader">
+          <Link href="/" className="strataBrand"><span className="strataBrandMark">S</span><span><strong>STRATA SA’O BITSA</strong><small>COME GET HOOKED.</small></span></Link>
+          <Link href="/" className="strataCheckoutBack">← Back to menu</Link>
+        </header>
+        <div className="strataCheckoutIntro"><p className="strataEyebrow">YOUR CRAVING STARTS HERE</p><h1>BUILD YOUR<br /><em>ORDER.</em></h1><p>Choose from the published menu, add your details and send your order. No account is required to start.</p></div>
+
+        <form className="strataCheckoutGrid" onSubmit={submit}>
+          <section className="strataCheckoutPanel">
+            <div className="strataPanelHeading"><span>01</span><h2>THE MENU</h2></div>
+            <div className="strataChoiceGroup"><span>ORDERING FOR</span>{(["Gaborone", "Francistown"] as const).map(value => <button type="button" key={value} className={branch === value ? "isSelected" : ""} aria-pressed={branch === value} onClick={() => { setBranch(value); setMessage(""); }}>{value}</button>)}</div>
+            {menuLoading ? <p className="strataInlineState" role="status">Loading the current menu…</p> : null}
+            {!menuLoading && menuError ? <div className="strataInlineNotice" role="status">{menuError}</div> : null}
+            {!menuLoading && !menuError && menu.length === 0 ? <div className="strataInlineNotice"><strong>Menu coming online.</strong><p>Only confirmed dishes and prices will be listed here. The team needs to publish the menu before orders can be submitted.</p></div> : null}
+            <div className="strataOrderMenu">{menu.map(item => <article key={item.id} className="strataOrderMenuItem">
+              <div className="strataOrderThumb">{item.imageUrl ? <img src={item.imageUrl} alt="" loading="lazy" /> : <span aria-hidden="true">SSB</span>}</div>
+              <div className="strataOrderItemCopy"><h3>{item.name}</h3>{item.description ? <p>{item.description}</p> : null}<strong>{money(item.price)}</strong></div>
+              <div className="strataQuantity" aria-label={item.name + " quantity"}><button type="button" aria-label={"Remove one " + item.name} disabled={!cart[item.id]} onClick={() => changeQuantity(item.id, -1)}>−</button><span>{cart[item.id] || 0}</span><button type="button" aria-label={"Add one " + item.name} onClick={() => changeQuantity(item.id, 1)}>＋</button></div>
+            </article>)}</div>
+          </section>
+
+          <section className="strataCheckoutPanel">
+            <div className="strataPanelHeading"><span>02</span><h2>YOUR DETAILS</h2></div>
+            <label className="strataField">Your name<input autoComplete="name" maxLength={120} value={name} onChange={event => setName(event.target.value)} required /></label>
+            <label className="strataField">Phone / WhatsApp<input autoComplete="tel" inputMode="tel" maxLength={60} value={phone} onChange={event => setPhone(event.target.value)} required /></label>
+            <div className="strataChoiceGroup"><span>FULFILMENT</span><button type="button" className={mode === "pickup" ? "isSelected" : ""} aria-pressed={mode === "pickup"} onClick={() => setMode("pickup")}>Pickup</button><button type="button" className={mode === "delivery" ? "isSelected" : ""} aria-pressed={mode === "delivery"} onClick={() => setMode("delivery")}>Delivery</button></div>
+            {mode === "delivery" ? <label className="strataField">Delivery address / landmark<textarea maxLength={500} value={location} onChange={event => setLocation(event.target.value)} required rows={3} placeholder="Area, street, building or nearby landmark" /></label> : <p className="strataFieldHint">The team will confirm the pickup point for {branch} before the order is accepted.</p>}
+            <label className="strataField">When would you like it?<select value={scheduledFor} onChange={event => setScheduledFor(event.target.value)}><option value="ASAP">As soon as possible</option><option value="Later today">Later today — confirm with me</option><option value="Schedule with team">Arrange a time with the team</option></select></label>
+            <label className="strataField">Notes for the team <span>(optional)</span><textarea maxLength={1200} rows={3} value={instructions} onChange={event => setInstructions(event.target.value)} placeholder="Anything we should know?" /></label>
+            <div className="strataCartSummary"><div><span>ITEMS</span><strong>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</strong></div><div><span>ITEM TOTAL</span><strong>{money(displayedTotal)}</strong></div><p>Delivery fees and final availability are not yet included. The team will confirm these before accepting your order. No online payment is taken here.</p></div>
+            {message ? <p className="strataFormMessage" role="status">{message}</p> : null}
+            <button className="strataButton strataSubmitOrder" type="submit" disabled={busy || menuLoading || menu.length === 0 || cartItems.length === 0}>{busy ? "SENDING ORDER…" : "Send order request"} <span aria-hidden="true">→</span></button>
+            <p className="strataPrivacyNote">Submitting sends your order details for review. It is not a payment, confirmed delivery time or guarantee of availability.</p>
+          </section>
+        </form>
       </div>
-      <div>
-       <Link className="button buttonLight" href="/account">My The Plug →</Link>
-       <p className="orderTruth">Opens your private order history and activity feed.</p>
-      </div>
-      <div>
-       <Link className="button buttonLight" href="/">Back to The Plug →</Link>
-       <p className="orderTruth">Returns to the menu and deals. Your submitted order stays in the kitchen queue.</p>
-      </div>
-     </div>
-    </div>
-   </div>
-  </main>
- );
- return <main className="orderPage"><div className="orderWrap"><div className="orderHeader"><Link href="/" className="logo"><span className="logoMark">B</span><span>The Plug</span></Link><Link href="/account" className="button buttonLight">My The Plug</Link></div><div className="sectionHead"><div><span className="kicker">Order ahead</span><h1>{selectedDate===today?"Choose your food.":"Pre-order your food."}</h1><p>{selectedDate===today?"Order as a guest. Your name and contact details can be saved with The Plug automatically for faster future orders.":"Planning for "+weekdayForDate(selectedDate)+". Menu & deals are set to this date, and the kitchen can see your scheduled order ahead of the food day."}</p></div></div><form onSubmit={submit} className="orderGrid"><div className="orderCard"><h2>Menu & deals</h2><div className="fieldGrid"><label>When do you need it?<input name="scheduledDate" type="date" min={gaboroneNowDate()} value={scheduledDate} onChange={event=>onScheduledDateChange(event.target.value)} required/></label><label>Time<input name="scheduledTime" type="time" min={scheduledDate===today?gaboroneNowTime():undefined} value={scheduledTime} onChange={event=>setScheduledTime(event.target.value)} required/></label></div>{!menuLoaded?<div className="emptyState">Loading the current The Plug menu…</div>:visibleMenu.length?<div className="orderItems">{visibleMenu.map(item=>{const quantity=quantities[item.id]??0;const unitPrice=orderUnitPrice(item,quantity);return <article className="orderItem" key={item.id}><div><strong>{item.name}</strong><small>P{item.price.toFixed(item.price%1?1:0)}{item.friendPrice!==undefined?" · Bring a Friend P"+item.friendPrice.toFixed(item.friendPrice%1?2:0):""}</small>{item.friendPrice!==undefined&&quantity>=2&&<small className="friendPriceActive">Bring-a-Friend price active · P{unitPrice.toFixed(unitPrice%1?2:0)} each</small>}</div><div className="qty"><button type="button" onClick={()=>change(item.id,-1)} aria-label={"Remove "+item.name}>−</button><strong>{quantity}</strong><button type="button" onClick={()=>change(item.id,1)} aria-label={"Add "+item.name}>+</button></div></article>})}</div>:<div className="emptyState"><strong>{menuUnavailable?"The The Plug menu could not be loaded.":"No menu items are published for "+weekdayForDate(selectedDate)+"."}</strong>{!menuUnavailable&&nextPublishedDate&&<div className="nextFoodCard"><span className="kicker">Next food day · {weekdayForDate(nextPublishedDate)}</span><strong>There&apos;s another food day coming.</strong><p>You can switch to {weekdayForDate(nextPublishedDate)} and pre-order now, so your request is already on the kitchen radar before the food day starts.</p><Link className="button buttonPrimary" href={"/order?date="+nextPublishedDate}>Order ahead for {weekdayForDate(nextPublishedDate)} →</Link></div>}{!menuUnavailable&&!nextPublishedDate&&<p>There is no future daily food published yet. Call The Plug on 76425849 / 76769834 if you need help.</p>}<div className="contactRow"><a className="button buttonDark" href="tel:76425849">Call 76425849</a><a className="button buttonLight" href="tel:76769834">Call 76769834</a></div></div>}<p className="orderTruth">Only currently published, available menu items can be ordered here. Bring-a-Friend pricing is controlled by the The Plug kitchen admin.</p>{selected.length>0&&<div className="orderSelectionSummary"><strong>Your order</strong>{selected.map(item=>{const unavailable=unavailableSelected.some(candidate=>candidate.id===item.id);return <div className={unavailable?"selectionUnavailable":"selectionLine"} key={item.id}><span>{item.quantity} × {item.name} · {unavailable?"Not available for "+weekdayForDate(selectedDate):"P"+(orderUnitPrice(item,item.quantity)*item.quantity).toFixed(2)}</span><button type="button" onClick={()=>setQuantities(current=>({...current,[item.id]:0}))}>Remove</button></div>})}{unavailableSelected.length>0&&<small className="selectionWarning">Changing the date does not erase your selection. Items that are not published for the chosen day stay here until you remove them or choose a compatible date.</small>}</div>}</div><div className="orderCard"><h2>Your details</h2><p className="orderTruth">No account is required. The Plug uses a temporary guest session to keep this order private and trackable on this device.</p><div className="fieldGrid"><label>Name<input name="customerName" autoComplete="name" defaultValue={saved.name} required/></label><label>Phone / WhatsApp<input name="phone" type="tel" autoComplete="tel" defaultValue={saved.phone} required/></label><label>Order type<select name="mode" defaultValue="pickup"><option value="pickup">Pickup</option><option value="delivery">Delivery</option></select></label><label className="fieldFull">Delivery location / landmark <span>(required for delivery)</span><input name="deliveryLocation" defaultValue={saved.location} placeholder="BAC Library, main entrance..."/></label><label className="fieldFull">Instructions <span>(optional)</span><textarea name="instructions" defaultValue={saved.notes} placeholder="Call when outside, no onions, etc."/></label></div><div className="total"><span>Total</span><strong>P{total.toFixed(2)}</strong></div>{error&&<p role="alert" className="notice">{error}</p>}<button className="button buttonPrimary" type="submit" disabled={busy||!selected.length||unavailableSelected.length>0}>{busy?"Saving order…":"Place order"}</button></div></form></div></main>;
+    </main>
+  );
 }
