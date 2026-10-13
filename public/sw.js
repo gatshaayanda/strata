@@ -1,4 +1,4 @@
-const CACHE_VERSION = "strata-shell-v2";
+const CACHE_VERSION = "strata-shell-v3";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const APP_SHELL = [
@@ -68,10 +68,46 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  if (request.headers.has("range") && /\.mp4$/i.test(url.pathname)) {
+    event.respondWith(handleVideoRange(request));
+    return;
+  }
+
   if (url.pathname.startsWith("/_next/static/") || /\.(?:css|js|woff2?|ttf|otf|png|jpe?g|webp|svg|ico|avif|mp4)$/i.test(url.pathname)) {
     event.respondWith(cacheFirst(request));
   }
 });
+
+async function handleVideoRange(request) {
+  const cache = await caches.open(SHELL_CACHE);
+  const url = new URL(request.url);
+  const cached = await cache.match(url.pathname + url.search);
+  if (cached) return createRangeResponse(cached, request.headers.get("range"));
+  try {
+    return await fetch(request);
+  } catch {
+    return Response.error();
+  }
+}
+
+async function createRangeResponse(response, rangeHeader) {
+  if (!rangeHeader || !rangeHeader.startsWith("bytes=")) return response;
+  const buffer = await response.arrayBuffer();
+  const size = buffer.byteLength;
+  const [startText, endText] = rangeHeader.slice(6).split("-", 2);
+  let start = startText ? Number.parseInt(startText, 10) : 0;
+  let end = endText ? Number.parseInt(endText, 10) : size - 1;
+  if (!startText && endText) start = Math.max(0, size - Number.parseInt(endText, 10));
+  end = Math.min(end, size - 1);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start > end || start >= size) {
+    return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+  }
+  const headers = new Headers(response.headers);
+  headers.set("Accept-Ranges", "bytes");
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(end - start + 1));
+  return new Response(buffer.slice(start, end + 1), { status: 206, statusText: "Partial Content", headers });
+}
 
 async function cacheFirst(request) {
   const cache = await caches.open(SHELL_CACHE);
@@ -79,7 +115,8 @@ async function cacheFirst(request) {
   if (cached) return cached;
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    // Cache only complete successful responses, never partial byte-range responses.
+    if (response.ok && response.status === 200 && !request.headers.has("range")) {
       await cache.put(request, response.clone());
       await trimCache(SHELL_CACHE, STATIC_LIMIT);
     }
