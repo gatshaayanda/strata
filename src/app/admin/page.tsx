@@ -1,3 +1,6 @@
 import AdminGate from "@/app/admin/admin-gate";
-import PlugAdminDashboard from "@/components/PlugAdminDashboard";
-export default function AdminPage(){return <AdminGate><PlugAdminDashboard/></AdminGate>}
+import StrataOperationsDashboard from "@/components/StrataOperationsDashboard";
+
+export default function AdminPage() {
+  return <AdminGate><StrataOperationsDashboard /></AdminGate>;
+}
