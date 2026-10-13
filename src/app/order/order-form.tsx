@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { getIdToken, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
+import { getIdToken, signInAnonymously } from "firebase/auth";
 import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
 import { subscribeToMenuItems, type MenuItem } from "@/lib/firebase/data";
 
@@ -27,23 +27,21 @@ export default function OrderForm() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [confirmedOrder, setConfirmedOrder] = useState<{ id: string; total: number } | null>(null);
-  const [user, setUser] = useState<User | null>(auth.currentUser);
   const orderIdRef = useRef("");
 
   useEffect(() => {
     const initialBranch = new URLSearchParams(window.location.search).get("branch");
     if (initialBranch === "Gaborone" || initialBranch === "Francistown") setBranch(initialBranch);
-    const stopAuth = onAuthStateChanged(auth, setUser);
     if (!hasFirebaseWebConfig) {
       setMenuLoading(false);
       setMenuError("The live menu is not connected in this environment yet.");
-      return () => stopAuth();
+      return;
     }
     const stopMenu = subscribeToMenuItems(
       items => { setMenu(items.filter(item => item.available)); setMenuLoading(false); setMenuError(""); },
       () => { setMenuLoading(false); setMenuError("We couldn’t load the menu. Check your connection and retry."); }
     );
-    return () => { stopAuth(); stopMenu(); };
+    return () => { stopMenu(); };
   }, []);
 
   const cartItems = useMemo(() => menu.filter(item => (cart[item.id] || 0) > 0).map(item => ({ item, quantity: cart[item.id] })), [menu, cart]);
@@ -75,7 +73,6 @@ export default function OrderForm() {
     try {
       let currentUser = auth.currentUser;
       if (!currentUser) currentUser = (await signInAnonymously(auth)).user;
-      setUser(currentUser);
       const token = await getIdToken(currentUser);
       if (!orderIdRef.current) orderIdRef.current = crypto.randomUUID();
       const response = await fetch("/api/orders", {
