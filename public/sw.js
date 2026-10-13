@@ -6,6 +6,7 @@ const APP_SHELL = [
   "/order",
   "/manifest.webmanifest",
   "/strata-icon.svg",
+  "/apple-touch-icon.png",
   "/strata-assets/fish.jpeg",
   "/strata-assets/groupline.jpeg",
   "/strata-assets/groupline1.jpeg",
