@@ -12,7 +12,9 @@ function getAdminApp(){
  if(!raw)throw new Error("Missing FIREBASE_ADMIN_KEY environment variable.");
  let serviceAccount:Record<string,unknown>;
  try{serviceAccount=JSON.parse(raw) as Record<string,unknown>}catch{throw new Error("FIREBASE_ADMIN_KEY must contain valid service-account JSON.")}
- const targetProject=process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;\n if(!targetProject||process.env.FIREBASE_PROJECT_ID!==targetProject||serviceAccount.project_id!==targetProject)throw new Error("Firebase Admin credentials do not match the configured Strata project.");\n return initializeApp({credential:cert(serviceAccount as Parameters<typeof cert>[0]),projectId:targetProject});
+ const targetProject=process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+ if(!targetProject||process.env.FIREBASE_PROJECT_ID!==targetProject||serviceAccount.project_id!==targetProject)throw new Error("Firebase Admin credentials do not match the configured Strata project.");
+ return initializeApp({credential:cert(serviceAccount as Parameters<typeof cert>[0]),projectId:targetProject});
 }
 function matchesWord(input:string,expected:string){
  const a=createHash("sha256").update(input).digest();
