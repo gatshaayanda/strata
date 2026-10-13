@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { hasFirebaseWebConfig } from "@/lib/firebase/client";
 import { subscribeToMenuItems, type MenuItem } from "@/lib/firebase/data";
@@ -83,7 +84,7 @@ export default function HomePage() {
         {loading ? <div className="strataState" role="status">Loading the latest menu…</div> :
           menu.length ? <div className="strataMenuGrid">{menu.slice(0, 6).map(item => (
             <article className="strataMenuCard" key={item.id}>
-              {item.imageUrl ? <img src={item.imageUrl} alt={item.name} loading="lazy" /> : <div className="strataMenuCardArt" aria-hidden="true"><span>SSB</span></div>}
+              {item.imageUrl ? <Image src={item.imageUrl} alt={item.name} width={720} height={480} sizes="(max-width: 560px) 100vw, (max-width: 850px) 50vw, 33vw" style={{ width: "100%", height: "190px", objectFit: "cover" }} /> : <div className="strataMenuCardArt" aria-hidden="true"><span>SSB</span></div>}
               <div className="strataMenuCardBody"><div><p>{item.category || "FROM OUR KITCHEN"}</p><h3>{item.name}</h3></div><strong>{money(item.price)}</strong></div>
               {item.description ? <p className="strataMenuDescription">{item.description}</p> : null}
               <Link href={orderHref} className="strataMenuAction">Add to your order <span aria-hidden="true">＋</span></Link>
