@@ -15,7 +15,7 @@ export default function Home() {
           <span><strong>STRATA</strong><small>SA’O BITSA</small></span>
         </Link>
         <nav aria-label="Main navigation"><a href="#food">THE FOOD</a><a href="#locations">FIND US</a></nav>
-        <a className="strataHeaderCta" href={orderLink("Dumela Strata! I'd like to place an order. Please share today's menu and prices.")} target="_blank" rel="noreferrer">ORDER ON WHATSAPP <span>↗</span></a>
+        <Link className="strataHeaderCta" href="/order">BUILD ORDER <span>↗</span></Link>
       </header>
 
       <section className="strataHero">
