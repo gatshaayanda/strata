@@ -484,6 +484,58 @@ service cloud.firestore {
       allow create, update: if isAdmin() && validReconciliation();
     }
 
+    // Strata website order requests. Guests use Firebase Anonymous Auth; no customer sign-in UI is required.
+    match /orderRequests/{requestId} {
+      function validNewOrderRequest() {
+        return request.resource.data.keys().hasOnly([
+          'customerId', 'customerName', 'phone', 'city', 'fulfilment',
+          'itemsText', 'deliveryLocation', 'notes', 'status', 'source',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'customerId', 'customerName', 'phone', 'city', 'fulfilment',
+          'itemsText', 'deliveryLocation', 'notes', 'status', 'source',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.customerName is string
+        && request.resource.data.customerName.size() > 0
+        && request.resource.data.customerName.size() <= 80
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 40
+        && request.resource.data.city in ['Gaborone', 'Francistown']
+        && request.resource.data.fulfilment in ['Delivery', 'Pickup', 'Need help deciding']
+        && request.resource.data.itemsText is string
+        && request.resource.data.itemsText.size() >= 3
+        && request.resource.data.itemsText.size() <= 1200
+        && request.resource.data.deliveryLocation is string
+        && request.resource.data.deliveryLocation.size() <= 240
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 600
+        && request.resource.data.status == 'New'
+        && request.resource.data.source == 'website'
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string;
+      }
+
+      allow create: if signedIn() && !isAdmin() && validNewOrderRequest();
+      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow update: if isAdmin()
+        && request.resource.data.customerId == resource.data.customerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'staffNote', 'updatedAt'])
+        && request.resource.data.status in [
+          'New', 'Received', 'Confirmed', 'Preparing',
+          'Ready for pickup', 'Out for delivery', 'Completed', 'Cancelled'
+        ]
+        && request.resource.data.updatedAt is string
+        && (
+          !request.resource.data.keys().hasAny(['staffNote'])
+          || (request.resource.data.staffNote is string && request.resource.data.staffNote.size() <= 1000)
+        );
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
