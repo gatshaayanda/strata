@@ -44,7 +44,7 @@ export default function HomePage() {
           <a href="#how-it-works">How it works</a>
           <Link href="/my-orders">My orders</Link>
         </nav>
-        <div className="strataNavActions"><button type="button" className="strataInstallButton" onClick={() => window.dispatchEvent(new Event("strata-open-install"))}>Install app ↓</button><Link className="strataButton strataButtonSmall" href={orderHref}>Order now <span aria-hidden="true">↗</span></Link></div>
+        <Link className="strataButton strataButtonSmall" href={orderHref}>Order now <span aria-hidden="true">↗</span></Link>
       </header>
 
       <section className="strataHero">
