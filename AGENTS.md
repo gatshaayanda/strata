@@ -21,10 +21,12 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 - Customer account: `src/app/account/page.tsx`. It lists only the current UID's requests with live status/message updates and offers optional Google linking to the anonymous session.
 - Staff operations: `src/app/operations/page.tsx`. Google sign-in is checked against `admins/{uid}`; only owner/staff roles can read/update the queue.
 - Data helpers: `src/lib/firebase/strata-orders.ts`; Firebase client and offline Firestore cache: `src/lib/firebase/client.ts`.
-- Firestore rules: `firestore.rules` is now Strata-only. Customers can create/read their own request, staff can update status/message, and all other collections are denied. Admin roles must be provisioned manually in Firebase Console.
+- Firestore rules: `firestore.rules` is now Strata-only. Customers can create/read their own request, staff can update status/message, and all other collections are denied. Admin roles must be provisioned manually in Firebase Console. `storage.rules` denies all client storage access until a Strata upload workflow is deliberately designed.
 - Firebase client configuration is documented in `.env.example`; real Web App values must be configured in the deployment environment. Do not guess credentials.
 - PWA: `src/app/pwa-register.tsx`, `src/app/pwa.css`, `src/app/manifest.ts`, `public/manifest.webmanifest`, `public/sw.js`. Public homepage, order-form shell and visual assets are cached. Customer records/admin pages are not cached. Order submission/history require connectivity; offline submission is explicitly blocked.
 - Inherited account page has been replaced; `src/middleware.ts` still redirects legacy Plug-only request/admin routes. The Strata operations queue is at `/operations`, not `/admin`.
+- Inherited API endpoints for sourcing requests, notifications, journey analytics, messaging config, temporary operations-word login and UploadThing were removed. A type-only legacy UploadThing helper remains for compile compatibility, but its API route is not present.
+- Removed inherited Firebase rules deployment workflow and scheduled Plug production reminder workflow. Workflow run `38371808720` failed while writing the Firebase service account; the deployment step was skipped. No Firebase rules deployment was performed by that run.
 - Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or automatic outbound WhatsApp messaging. Do not describe these as implemented.
 - Missing visual asset at prior copy checkpoint: `image_987b17.png`.
 - No local build, live Firebase rules test, deployed customer journey, PWA install, or physical-device iOS test has been verified in this checkpoint.
