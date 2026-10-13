@@ -1,53 +1,46 @@
 # Strata Sa’o Bitsa — Project Operating Contract
 
-## Product and scope
-Strata Sa’o Bitsa is a Botswana fish-and-chips/food business using the brand line **COME GET HOOKED**. Intended launch markets: Gaborone and Francistown. Business contact: 77 762 614 (Botswana country code +267).
+## Product
+Strata Sa’o Bitsa is a Botswana fish-and-chips/food business using **COME GET HOOKED**, with intended launch markets Gaborone and Francistown. Business contact: 77 762 614 (+267 777 62614).
 
-The product goal is a branded, mobile-first customer ordering PWA and the operations system behind it. Customers must be able to use the website immediately without installing it or signing in. Intended operations include menu/availability by service point, guest ordering, pickup/delivery, a shared order queue for web/phone/WhatsApp/Facebook/walk-in orders, staff fulfilment statuses, delivery assignment for own drivers and partners, payment recording/reconciliation, and owner reporting.
+The product goal is a mobile-first storefront and ordering/operations PWA. Browsing, guest ordering and website access must not require installation or customer sign-in. Never invent menu items/prices, opening hours, service points, delivery zones/fees, payment methods, delivery timing or customer demand.
 
-## Evidence and workflow
-- Product owner/final reviewer: user.
-- Technical navigator and implementation partner: ChatGPT; local coding/testing must use the real checked-out repository.
-- GitHub is the source of truth. A GitHub commit is not proof of local build, deployed readiness or production behavior.
+## Workflow and evidence
+- User is product owner/final reviewer; ChatGPT is technical navigator/implementation partner.
 - Workflow: UNDERSTAND → INSPECT → PLAN → IMPLEMENT → VERIFY → CHECKPOINT.
-- Unexpected result: STOP → inspect reality → identify first failure → fix → verify.
-- Inspect the actual Git state, source, route tree, environment variable names, Firebase rules/configuration, workflows and tests before changing dependent layers.
-- Make the smallest controlled change; preserve working behavior; review the diff and report exact evidence. Never invent configuration, menu items, prices, delivery coverage, payments or deployment status.
-- Do not deploy, merge, alter live services/data, or incur material costs without authorization.
+- GitHub is the source of truth. A commit is not proof of a successful build, current deployment or working production behavior.
+- Make small, controlled changes. Do not invent repository/configuration/runtime state.
+- User handles Vercel shipping unless explicitly asked otherwise. Do not deploy, merge, mutate live services/data or incur material costs without authorization.
+- If a test fails or behavior is unexpected: STOP → inspect actual state → identify the first failure → fix → verify.
+- Record material checks as PASS, FAIL, NOT RUN or BLOCKED. Distinguish source inspection from local build, deployed integration and real-device verification.
 
 ## Current implementation checkpoint
 - Repository: `gatshaayanda/strata`, branch `main`.
-- Active homepage: Strata branded storefront in `src/app/page.tsx`; styles in `src/app/globals.css`.
-- Current assets: `public/strata-assets/fish.jpeg`, `groupline.jpeg`, `groupline1.jpeg`, `customer.jpeg`, `customers.jpeg`, `stat.mp4`. The additionally expected `image_987b17.png` was not found in Downloads during the copy step.
-- Brand icon: `public/strata-icon.svg`; manifest: `src/app/manifest.ts` and `public/manifest.webmanifest`.
-- PWA lifecycle and optional installation UI: `src/app/pwa-register.tsx`, `src/app/pwa.css`, service worker `public/sw.js`; cache namespace is `strata-shell-v1`.
-- `src/app/order/page.tsx` currently creates a guest order-request message and hands it to WhatsApp. It does **not** persist an order, calculate a server-validated total, take payment, or confirm delivery.
-- `src/middleware.ts` redirects inherited The Plug account/admin/request screens away from Strata until Strata-native replacements exist.
-- A pushed commit is not proof that the local workspace is synced or that the application builds. At this checkpoint, a local build, device installation, deployed PWA and production customer journey have not been verified.
+- Storefront: `src/app/page.tsx`; styling: `src/app/globals.css`; committed visual assets in `public/strata-assets/`.
+- Order request: `src/app/order/page.tsx`. It silently uses Firebase Anonymous Auth, writes customer requests to `orderRequests`, and displays a reference only after the Firestore write resolves. This is a request, not confirmed checkout/payment.
+- Customer account: `src/app/account/page.tsx`. It lists only the current UID's requests with live status/message updates and offers optional Google linking to the anonymous session.
+- Staff operations: `src/app/operations/page.tsx`. Google sign-in is checked against `admins/{uid}`; only owner/staff roles can read/update the queue.
+- Data helpers: `src/lib/firebase/strata-orders.ts`; Firebase client and offline Firestore cache: `src/lib/firebase/client.ts`.
+- Firestore rules: `firestore.rules` is now Strata-only. Customers can create/read their own request, staff can update status/message, and all other collections are denied. Admin roles must be provisioned manually in Firebase Console.
+- Firebase client configuration is documented in `.env.example`; real Web App values must be configured in the deployment environment. Do not guess credentials.
+- PWA: `src/app/pwa-register.tsx`, `src/app/pwa.css`, `src/app/manifest.ts`, `public/manifest.webmanifest`, `public/sw.js`. Public homepage, order-form shell and visual assets are cached. Customer records/admin pages are not cached. Order submission/history require connectivity; offline submission is explicitly blocked.
+- Inherited account page has been replaced; `src/middleware.ts` still redirects legacy Plug-only request/admin routes. The Strata operations queue is at `/operations`, not `/admin`.
+- Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or automatic outbound WhatsApp messaging. Do not describe these as implemented.
+- Missing visual asset at prior copy checkpoint: `image_987b17.png`.
+- No local build, live Firebase rules test, deployed customer journey, PWA install, or physical-device iOS test has been verified in this checkpoint.
 
-## Business facts — do not fabricate
-- Intended markets: Gaborone and Francistown.
-- Delivery model under consideration: own drivers plus delivery partners.
-- Existing orders currently arrive through mixed channels; order volume is unknown.
-- Menus, prices, opening hours, service-point/branch details, delivery zones/fees, preparation timing, active payment methods and current order handling require confirmation before they become live operational promises.
-- Firebase web values identify project `strata-6706b`; this alone does not prove that Firestore, Authentication, Storage, rules, or payment integrations are configured.
-- No online payment method should be shown as active until configuration and end-to-end payment behavior are verified.
+## Firebase setup gate
+1. Configure the actual Web App values for project `strata-6706b` using `NEXT_PUBLIC_FIREBASE_*` variables documented in `.env.example`.
+2. Enable Anonymous and Google providers in Firebase Authentication and add the deployed hostname to authorised domains.
+3. Publish `firestore.rules`.
+4. Provision `admins/{uid}` manually with `role: "owner"` or `role: "staff"`; clients must never be able to create/change roles.
+5. Test guest request → reference → My Requests → staff status/message update → customer live update.
+6. Test offline shell/form reopening separately from online submission; test Android and iOS installation separately.
 
-## Required customer experience
-- Website works immediately in a mobile browser. Installation is optional and must never gate browsing or ordering.
-- Support Android native installation where offered, iOS Safari Add to Home Screen guidance, and embedded-browser handoff without blocking the page.
-- Verify manifest recognition, service-worker registration/update, app identity/icon, cache isolation, install behavior and deployed behavior as separate checks.
-- Ordering must communicate when a request is merely sent versus when the business has accepted it. Never claim payment, stock, delivery or order persistence without evidence.
-- Build accessible loading, empty, validation, offline and failure states. Use readable foreground/background colors and visible keyboard focus; target WCAG 2.2 AA contrast.
-
-## Implementation sequence
-1. Complete identity reset across active customer surfaces, metadata, icons, manifest, service worker/cache, package identity and documentation.
-2. Verify local install, identity check, typecheck, lint and production build; inspect and resolve the earliest failure.
-3. Confirm real menu, prices, hours, locations, delivery terms and payment choices with the business.
-4. Implement durable guest orders, server-side total validation, confirmation/reference, customer status view, and owner/staff queue with server-side authorization and secure database rules.
-5. Add phone/WhatsApp/Facebook/walk-in order entry into the same queue, driver/partner assignment, status transitions, payment reconciliation and owner reports.
-6. Test customer and operational workflows locally, then in preview/deployed environments when authorized. Record PASS / FAIL / NOT RUN / BLOCKED for each material check.
-
-## Verification and checkpoint
-- PASS means the specified check was executed and passed; FAIL means it was executed and failed; NOT RUN means not executed; BLOCKED means a stated constraint prevented execution.
-- Review actual changed files/diff, run applicable checks, update this file when project state changes, and report commit(s), files, evidence, gaps and next action.
+## Next acceptance criteria
+- Firebase setup complete and owner account provisioned.
+- Identity check, typecheck, lint and production build pass on the exact pushed commit.
+- Deployed customer request can be created, read only by its owner, and updated only by staff.
+- Unauthorized users cannot read the queue or change status; customer cannot edit/delete a saved request.
+- PWA public shell works offline without caching private records; actual install and iOS behavior tested on devices.
+- Business confirms actual menu, prices, hours, locations, delivery terms and payment methods before full checkout is built.
