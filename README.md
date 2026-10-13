@@ -29,7 +29,7 @@ Firebase web configuration is intentionally not guessed. The project identifier 
    - `NEXT_PUBLIC_FIREBASE_APP_ID`
 4. In **Authentication → Sign-in method**, enable **Anonymous** and **Google**.
 5. In **Authentication → Settings → Authorized domains**, add the exact deployed hostname you will use. Add `localhost` if running locally.
-6. In **Firestore Database → Rules**, paste the contents of `firestore.rules` from this repository and publish them. These are Strata-only rules; they intentionally deny access to all other collections.
+6. In **Firestore Database → Rules**, paste the contents of `firestore.rules` from this repository and publish them. These are Strata-only rules; they intentionally deny access to all other collections. `storage.rules` denies all Storage access because uploads are not part of this first flow.
 7. To provision the owner: visit `/operations` and attempt Google sign-in. In **Authentication → Users**, find that Google user and copy its UID. In **Firestore → Data**, create a document in collection `admins` whose document ID is exactly that UID, with one field: `role` (string) = `owner`. The rules intentionally prohibit clients from creating or changing admin roles. Return to `/operations` and sign in again. Add staff the same way with role `staff`.
 
 The web config values are public client configuration, not service-account credentials. Never put a Firebase Admin service-account JSON, private key or other server secret in a `NEXT_PUBLIC_*` variable.
@@ -70,4 +70,4 @@ The additionally expected `image_987b17.png` was not found at the asset-copy che
 
 ## Evidence and deployment boundary
 
-GitHub commits do not prove that Firebase has been configured, that a deployment is current, that a production build passes, or that a phone install/customer journey works. No deployment or live Firebase mutation has been performed by this implementation. The owner must complete the Firebase console setup and run the QA flow above; report actual results before treating the flow as production-ready.
+GitHub commits do not prove that Firebase has been configured, that a deployment is current, that a production build passes, or that a phone install/customer journey works. The inherited auto-deploy and scheduled reminder workflows were removed. The rules-deploy workflow run failed before its service-account step completed, and its deployment step was skipped; no Firebase rules deployment was performed by that run. The owner must complete the Firebase console setup and run the QA flow above; report actual results before treating the flow as production-ready.
