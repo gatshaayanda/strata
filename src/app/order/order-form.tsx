@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { getIdToken, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
@@ -128,7 +129,7 @@ export default function OrderForm() {
             {!menuLoading && menuError ? <div className="strataInlineNotice" role="status">{menuError}</div> : null}
             {!menuLoading && !menuError && menu.length === 0 ? <div className="strataInlineNotice"><strong>Menu coming online.</strong><p>Only confirmed dishes and prices will be listed here. The team needs to publish the menu before orders can be submitted.</p></div> : null}
             <div className="strataOrderMenu">{menu.map(item => <article key={item.id} className="strataOrderMenuItem">
-              <div className="strataOrderThumb">{item.imageUrl ? <img src={item.imageUrl} alt="" loading="lazy" /> : <span aria-hidden="true">SSB</span>}</div>
+              <div className="strataOrderThumb">{item.imageUrl ? <Image src={item.imageUrl} alt="" width={80} height={80} sizes="80px" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span aria-hidden="true">SSB</span>}</div>
               <div className="strataOrderItemCopy"><h3>{item.name}</h3>{item.description ? <p>{item.description}</p> : null}<strong>{money(item.price)}</strong></div>
               <div className="strataQuantity" aria-label={item.name + " quantity"}><button type="button" aria-label={"Remove one " + item.name} disabled={!cart[item.id]} onClick={() => changeQuantity(item.id, -1)}>−</button><span>{cart[item.id] || 0}</span><button type="button" aria-label={"Add one " + item.name} onClick={() => changeQuantity(item.id, 1)}>＋</button></div>
             </article>)}</div>
