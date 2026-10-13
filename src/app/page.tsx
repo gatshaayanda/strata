@@ -14,7 +14,7 @@ export default function Home() {
           <img src="/strata-icon.svg" alt="" width="48" height="48" />
           <span><strong>STRATA</strong><small>SA’O BITSA</small></span>
         </Link>
-        <nav aria-label="Main navigation"><a href="#food">THE FOOD</a><a href="#locations">FIND US</a></nav>
+        <nav aria-label="Main navigation"><a href="#food">THE FOOD</a><a href="#locations">FIND US</a><Link href="/account">MY REQUESTS</Link></nav>
         <Link className="strataHeaderCta" href="/order">BUILD ORDER <span>↗</span></Link>
       </header>
 
@@ -65,7 +65,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><span>FISH. CHIPS. GOOD TIMES.</span><a href={orderLink("Dumela Strata! I'd like to place an order.")} target="_blank" rel="noreferrer">ORDER ON WHATSAPP ↗</a><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
+      <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><span>FISH. CHIPS. GOOD TIMES.</span><Link href="/account">MY REQUESTS ↗</Link><a href={orderLink("Dumela Strata! I'd like to place an order.")} target="_blank" rel="noreferrer">ORDER ON WHATSAPP ↗</a><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
     </main>
   );
 }
