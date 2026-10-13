@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       const existing = await transaction.get(ref);
       if (existing.exists) {
         const data = existing.data() ?? {};
-        if (data.customerId === decoded.uid && data.customerName === customerName && data.phone === phone) return { duplicate: true };
+        if (data.customerId === decoded.uid && data.customerName === customerName.trim() && data.phone === phone.trim() && data.branch === branch && JSON.stringify(data.items) === JSON.stringify(verifiedItems)) return { duplicate: true, total: Number(data.total) || 0 };
         throw new Error("ORDER_REFERENCE_CONFLICT");
       }
       const now = new Date().toISOString();
@@ -103,10 +103,10 @@ export async function POST(request: Request) {
         amountPaid: 0,
       };
       transaction.create(ref, order);
-      return { duplicate: false };
+      return { duplicate: false, total };
     });
 
-    return NextResponse.json({ orderId, total, alreadySaved: saved.duplicate }, { status: saved.duplicate ? 200 : 201 });
+    return NextResponse.json({ orderId, total: saved.total, alreadySaved: saved.duplicate }, { status: saved.duplicate ? 200 : 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     if (message === "ORDER_SERVICE_NOT_CONFIGURED") return NextResponse.json({ error: "Ordering is not fully connected yet. Your details have not been sent; please try again later." }, { status: 503 });
