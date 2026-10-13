@@ -3,6 +3,7 @@ const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const APP_SHELL = [
   "/",
+  "/order",
   "/manifest.webmanifest",
   "/strata-icon.svg",
   "/strata-assets/fish.jpeg",
