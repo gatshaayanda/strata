@@ -6,7 +6,7 @@ importScripts(
 
 let thePlugMessaging = null;
 try {
-  const config = self.__THE_PLUG_FIREBASE_CONFIG__;
+  const config = self.__STRATA_FIREBASE_CONFIG__;
   if (config && config.apiKey && config.projectId && config.messagingSenderId && config.appId) {
     firebase.initializeApp(config);
     thePlugMessaging = firebase.messaging();
@@ -14,26 +14,26 @@ try {
       // Notification payloads are displayed automatically by Firebase. Only render
       // data-only pushes here to avoid showing the same notification twice.
       if (payload.notification) return;
-      const title = payload.data?.title || "The Plug update";
+      const title = payload.data?.title || "Strata Sa’o Bitsa update";
       const options = {
-        body: payload.data?.body || "Open The Plug to check your latest account information.",
-        icon: "/plug-icon.svg",
-        badge: "/plug-icon.svg",
-        data: { link: payload.data?.link || "/account" },
+        body: payload.data?.body || "Open Strata Sa’o Bitsa to check your latest account information.",
+        icon: "/strata-icon.svg",
+        badge: "/strata-icon.svg",
+        data: { link: payload.data?.link || "/my-orders" },
       };
       self.registration.showNotification(title, options);
     });
   } else {
-    console.error("The Plug Firebase Messaging web config is incomplete.");
+    console.error("Strata Sa’o Bitsa Firebase Messaging web config is incomplete.");
   }
 } catch (error) {
-  console.error("The Plug Firebase Messaging service worker could not initialize.", error);
+  console.error("Strata Sa’o Bitsa Firebase Messaging service worker could not initialize.", error);
 }
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const rawLink = event.notification.data?.link || "/account";
-  const link = rawLink.startsWith("/") ? rawLink : "/account";
+  const rawLink = event.notification.data?.link || "/my-orders";
+  const link = rawLink.startsWith("/") ? rawLink : "/my-orders";
   event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
     for (const client of list) {
       if ("focus" in client) {
@@ -45,12 +45,12 @@ self.addEventListener("notificationclick", (event) => {
   }));
 });
 
-const CACHE_VERSION = "theplug-shell-v15";
-const MEDIA_CACHE = "theplug-media-v1";
+const CACHE_VERSION = "strata-shell-v1";
+const MEDIA_CACHE = "strata-media-v1";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const PUBLIC_PAGE_LIMIT = 12;
-const APP_SHELL = ["/", "/request", "/offline", "/plug-icon.svg", "/manifest.webmanifest"];
+const APP_SHELL = ["/", "/order", "/offline", "/strata-icon.svg", "/manifest.webmanifest"];
 
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
@@ -91,7 +91,7 @@ self.addEventListener("message", event => {
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => (key.startsWith("theplug-shell-") && key !== SHELL_CACHE) || (key.startsWith("theplug-media-") && key !== MEDIA_CACHE)).map(key => caches.delete(key)));
+    await Promise.all(keys.filter(key => (key.startsWith("strata-shell-") && key !== SHELL_CACHE) || (key.startsWith("strata-media-") && key !== MEDIA_CACHE)).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -105,7 +105,7 @@ self.addEventListener("fetch", event => {
   const isNavigation = request.mode === "navigate" || request.headers.get("accept")?.includes("text/html");
   const isPrivate = /^\/(?:account|requests|orders|admin|invite)(?:\/|$)/.test(url.pathname);
 
-  // Private/member routes are network-only. Never serve a cached account/request page as
+  // Private/member routes are network-only. Never serve a cached account/order page as
   // a substitute for a different route or when the authenticated page cannot be fetched.
   if (isNavigation && isPrivate) {
     event.respondWith(fetch(request).catch(() => caches.open(SHELL_CACHE).then(cache => cache.match("/offline")).then(response => response || Response.error())));
