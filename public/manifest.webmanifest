@@ -25,5 +25,35 @@
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
+  ],
+  "lang": "en",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Start an order",
+      "short_name": "Order",
+      "description": "Send Strata an order request",
+      "url": "/order",
+      "icons": [
+        {
+          "src": "/strata-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Find a location",
+      "short_name": "Locations",
+      "description": "Check Gaborone and Francistown service",
+      "url": "/#locations",
+      "icons": [
+        {
+          "src": "/strata-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
   ]
 }
