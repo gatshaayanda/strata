@@ -11,8 +11,7 @@ const criticalFiles = [
   "src/app/pwa-register.tsx",
   "public/manifest.webmanifest",
   "public/sw.js",
-  "public/strata-icon.svg",
-  "public/apple-touch-icon.png"
+  "public/strata-icon.svg"
 ];
 const forbidden = [
   /the plug/i,
@@ -46,6 +45,7 @@ if (fs.existsSync(manifestPath)) {
   if (manifest.theme_color !== "#101010") failures.push("manifest: wrong theme color");
   if (!manifest.icons?.some(icon => icon.src === "/strata-icon.svg")) failures.push("manifest: Strata SVG icon missing");
   if (!manifest.icons?.some(icon => icon.src === "/apple-touch-icon.png" && icon.sizes === "180x180")) failures.push("manifest: Apple touch icon missing");
+  if (!fs.existsSync(path.join(root, "public/apple-touch-icon.png"))) failures.push("manifest: Apple touch icon file missing");
 }
 const swPath = path.join(root, "public/sw.js");
 if (fs.existsSync(swPath)) {
