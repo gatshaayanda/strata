@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Strata Sa’o Bitsa fish mark">
+  <rect width="512" height="512" rx="104" fill="#D71920"/>
+  <path d="M95 256c57-81 132-122 226-122 45 0 82 10 115 31l-43 51 43 40c-33 21-70 31-115 31-94 0-169-41-226-122Z" fill="#fff"/>
+  <path d="m95 256-47-45v90l47-45Z" fill="#fff"/>
+  <circle cx="359" cy="229" r="13" fill="#111"/>
+  <path d="M176 256c35 24 75 36 120 36" fill="none" stroke="#111" stroke-width="11" stroke-linecap="round"/>
+  <path d="M256 134c20 29 31 69 31 122s-11 93-31 122" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round" opacity=".18"/>
+</svg>
