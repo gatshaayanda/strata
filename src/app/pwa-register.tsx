@@ -298,7 +298,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
       <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="strata-install-message">
-        <div className="plugInstallTop"><span className="plugInstallMark">P</span><span className="plugInstallTag">THE PLUG · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
+        <div className="plugInstallTop"><span className="plugInstallMark">S</span><span className="plugInstallTag">STRATA SA’O BITSA · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
         <div className="plugInstallKicker">YOUR SOURCING APP</div>
         <h2 id="plug-install-title">Strata Sa’o Bitsa.<br/><em>One tap away.</em></h2>
         <p id="strata-install-message">Install Strata Sa’o Bitsa for quick access to food ordering, order history and updates.</p>
@@ -336,7 +336,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     <div style={embeddedInstallStyle} role="alertdialog" aria-modal="true" aria-labelledby="plug-embedded-title" aria-describedby="plug-embedded-message">
       <div className="pwaInstallInfo" style={{...installShellStyle, position: "relative", left: "auto", right: "auto", bottom: "auto", width: "100%", maxWidth: 520, margin: 0}}>
         <div>
-          <strong id="plug-embedded-title"><span aria-hidden="true">🌐 </span>OPEN THE PLUG IN YOUR BROWSER</strong>
+          <strong id="plug-embedded-title"><span aria-hidden="true">🌐 </span>OPEN STRATA SA’O BITSA IN YOUR BROWSER</strong>
           <span id="plug-embedded-message">{embeddedAndroid ? <>Tap below to open Strata Sa’o Bitsa in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>Strata Sa’o Bitsa opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
         </div>
         <div className="pwaInstallActions" style={{display:"flex",justifyContent:"flex-end"}}>
