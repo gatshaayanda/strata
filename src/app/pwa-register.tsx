@@ -299,7 +299,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
     <div style={installShellStyle} role="presentation">
       <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="strata-install-message">
         <div className="plugInstallTop"><span className="plugInstallMark">S</span><span className="plugInstallTag">STRATA SA’O BITSA · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
-        <div className="plugInstallKicker">YOUR SOURCING APP</div>
+        <div className="plugInstallKicker">YOUR FOOD ORDERING APP</div>
         <h2 id="plug-install-title">Strata Sa’o Bitsa.<br/><em>One tap away.</em></h2>
         <p id="strata-install-message">Install Strata Sa’o Bitsa for quick access to food ordering, order history and updates.</p>
         {installHelpOpen ? (
@@ -324,7 +324,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
           </div>
         ) : (
           <>
-            <div className="plugInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Strata Sa’o Bitsa from your home screen.</small></span><span><b>02</b><strong>Your requests</strong><small>Return to your sourcing journey and account.</small></span><span><b>03</b><strong>Private by account</strong><small>Keep your conversations in your member space.</small></span></div>
+            <div className="plugInstallModalBenefits"><span><b>01</b><strong>Quick access</strong><small>Open Strata Sa’o Bitsa from your home screen.</small></span><span><b>02</b><strong>Your orders</strong><small>Return to your saved orders and recorded status.</small></span><span><b>03</b><strong>Clear confirmation</strong><small>See when an order is saved and when staff update its status.</small></span></div>
             <button type="button" className="plugInstallPrimary" onClick={() => void install()}>Install Strata Sa’o Bitsa →</button>
             <button type="button" className="plugInstallSecondary" onClick={dismissInstall}>Not now</button>
           </>
@@ -340,14 +340,14 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
           <span id="plug-embedded-message">{embeddedAndroid ? <>Tap below to open Strata Sa’o Bitsa in Chrome. Then open the <b>⋮ menu</b> and choose <b>Install app</b>.</> : <>Strata Sa’o Bitsa opened inside another app. Use that app’s menu to open this page in your browser, then look for <b>Install app</b> in the browser menu.</>}</span>
         </div>
         <div className="pwaInstallActions" style={{display:"flex",justifyContent:"flex-end"}}>
-          <button ref={embeddedActionRef} type="button" style={{background:"#0866FF",color:"#fff"}} onClick={openBrowser}>{embeddedAndroid ? "OPEN IN CHROME" : "OPEN IN BROWSER"}</button>
+          <button ref={embeddedActionRef} type="button" style={{background:"#D71920",color:"#fff"}} onClick={openBrowser}>{embeddedAndroid ? "OPEN IN CHROME" : "OPEN IN BROWSER"}</button>
         </div>
       </div>
     </div>
   ) : null;
 
   return <>
-    {offline && <div className="offlineBanner" role="status" aria-live="polite"><span aria-hidden="true">⚡</span> Offline · Saved public finds may still be available on this device. Requests and account changes need a connection.</div>}
+    {offline && <div className="offlineBanner" role="status" aria-live="polite"><span aria-hidden="true">⚡</span> Offline · Previously loaded menu pages may still be available on this device. Orders and account changes need a connection.</div>}
     {!offline && reconnecting && <div className="offlineBanner reconnectingBanner" role="status" aria-live="polite"><span aria-hidden="true">↻</span> Reconnected · Strata Sa’o Bitsa is syncing and checking for the latest information.</div>}
     {!environment().standalone && installState !== "embedded" && (
       <button
