@@ -153,7 +153,7 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
         void install();
         return;
       }
-      // Match the working Odi install flow: never let a visible install CTA silently
+      // When native installation is unavailable, never let a visible install CTA silently
       // do nothing when this browser has not emitted beforeinstallprompt.
       const platform = current.ios ? "ios" : current.android ? "android" : "other";
       setInstallPlatform(platform);
@@ -297,11 +297,11 @@ export default function PwaRegister({ initialEmbedded = false, initialAndroid = 
   const embeddedInstallStyle: CSSProperties = { position: "fixed", inset: 0, zIndex: 2147483647, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)", overscrollBehavior: "contain" };
   const installCard = installState === "native" ? (
     <div style={installShellStyle} role="presentation">
-      <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="plug-install-message">
+      <section className="plugInstallModal" role="dialog" aria-modal="false" aria-labelledby="plug-install-title" aria-describedby="strata-install-message">
         <div className="plugInstallTop"><span className="plugInstallMark">P</span><span className="plugInstallTag">THE PLUG · BOTSWANA</span><button type="button" className="plugInstallClose" aria-label="Close install prompt" onClick={dismissInstall}>×</button></div>
         <div className="plugInstallKicker">YOUR SOURCING APP</div>
         <h2 id="plug-install-title">Strata Sa’o Bitsa.<br/><em>One tap away.</em></h2>
-        <p id="plug-install-message">Install Strata Sa’o Bitsa on your device for a direct home-screen shortcut to your sourcing requests, account and private conversations with Frank.</p>
+        <p id="strata-install-message">Install Strata Sa’o Bitsa for quick access to food ordering, order history and updates.</p>
         {installHelpOpen ? (
           <div className="plugInstallSteps" role="status" aria-live="polite">
             {installPlatform === "ios" ? (
