@@ -1,4 +1,4 @@
-name: The Plug quality
+name: Strata quality
 on:
   push:
     branches: [main]
