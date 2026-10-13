@@ -1,4 +1,4 @@
-name: The Plug quality
+name: Strata Sa’o Bitsa quality
 on:
   push:
     branches: [main]
