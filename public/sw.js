@@ -47,7 +47,7 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
 
   const isNavigation = request.mode === "navigate" || request.headers.get("accept")?.includes("text/html");
-  const isPrivate = /^\/(?:account|requests|orders|admin|invite|request|order|book|saved)(?:\/|$)/.test(url.pathname);
+  const isPrivate = /^\/(?:account|requests|orders|admin|operations|invite|request|book|saved)(?:\/|$)/.test(url.pathname);
 
   // Never cache customer or admin records. A connection is required for private actions.
   if (isPrivate) return;
