@@ -1,4 +1,4 @@
-const CACHE_VERSION = "strata-shell-v1";
+const CACHE_VERSION = "strata-shell-v2";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const APP_SHELL = [
@@ -11,7 +11,8 @@ const APP_SHELL = [
   "/strata-assets/groupline.jpeg",
   "/strata-assets/groupline1.jpeg",
   "/strata-assets/customer.jpeg",
-  "/strata-assets/customers.jpeg"
+  "/strata-assets/customers.jpeg",
+  "/strata-assets/stat.mp4"
 ];
 
 self.addEventListener("install", event => {
