@@ -1,0 +1,38 @@
+{
+  "appName": "Strata Sa’o Bitsa | Fish & Food",
+  "shortName": "Sa’o Bitsa",
+  "themeColor": "#D71920",
+  "icon": "/strata-icon.svg",
+  "cachePrefix": "strata-",
+  "identityFiles": [
+    "package.json",
+    "README.md",
+    "src/app/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/manifest.ts",
+    "public/manifest.webmanifest",
+    "public/sw.js",
+    "src/app/pwa-register.tsx",
+    "src/app/offline/page.tsx",
+    "src/app/order/page.tsx",
+    "src/app/order/order-form.tsx",
+    "src/app/my-orders/page.tsx",
+    "src/app/admin/admin-gate.tsx",
+    "src/components/StrataOperationsDashboard.tsx",
+    "src/app/api/firebase/messaging-sw-config/route.ts",
+    "src/app/robots.ts",
+    "src/app/sitemap.ts"
+  ],
+  "forbiddenSourcePatterns": [
+    "the-plug.vercel.app",
+    "the-plug-pearl.vercel.app",
+    "plug-icon.svg",
+    "plug-icon-192.png",
+    "plug-icon-512.png",
+    "theplug-shell-",
+    "theplug-media-",
+    "boemo-joos-food-deals",
+    "meating-place-34321",
+    "odi-driving-school"
+  ]
+}
