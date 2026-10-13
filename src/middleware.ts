@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // The Plug's inherited customer/admin screens are not Strata workflows.
 // Keep those routes out of the public Strata journey until their replacements exist.
-const legacyRoutes = new Set(["/request", "/book", "/account", "/saved", "/admin", "/invite"]);
+const legacyRoutes = new Set(["/request", "/book", "/saved", "/admin", "/invite"]);
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname.replace(/\/+$/, "") || "/";
