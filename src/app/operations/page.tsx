@@ -114,7 +114,6 @@ export default function OperationsPage() {
         {!orders.length ? <div className="strataAccountEmpty"><strong>No website requests yet.</strong><p>When a customer submits an online request, it will appear here.</p></div> : orders.map(order => <article className="strataOperationsOrder" key={order.id}>
           <div className="strataOperationsOrderTop"><div><span className="strataEyebrow">{order.city} · {order.fulfilment}</span><h2>{order.customerName}</h2><small>{new Date(order.createdAt).toLocaleString()} · {order.id}</small></div><b data-status={order.status}>{order.status}</b></div>
           <p className="strataOperationsItems">{order.itemsText}</p>
-          {order.phone && <p>Contact: <a href={"tel:" + order.phone}>{order.phone}</a></p>}
           {order.deliveryLocation && <p>Delivery location: {order.deliveryLocation}</p>}
           {order.notes && <p>Customer note: {order.notes}</p>}
           <div className="strataOperationsControls">

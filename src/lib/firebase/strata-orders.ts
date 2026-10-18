@@ -14,7 +14,7 @@ export type StrataOrderRequest = {
   id: string;
   customerId: string;
   customerName: string;
-  phone: string;
+  phone?: string;
   city: "Gaborone" | "Francistown";
   fulfilment: "Delivery" | "Pickup" | "Need help deciding";
   itemsText: string;

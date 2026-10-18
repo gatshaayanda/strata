@@ -31,7 +31,7 @@ service cloud.firestore {
           'createdAt', 'updatedAt'
         ])
         && request.resource.data.keys().hasAll([
-          'customerId', 'customerName', 'phone', 'city', 'fulfilment',
+          'customerId', 'customerName', 'city', 'fulfilment',
           'itemsText', 'deliveryLocation', 'notes', 'status', 'source',
           'createdAt', 'updatedAt'
         ])
@@ -39,8 +39,10 @@ service cloud.firestore {
         && request.resource.data.customerName is string
         && request.resource.data.customerName.size() > 0
         && request.resource.data.customerName.size() <= 80
-        && request.resource.data.phone is string
-        && request.resource.data.phone.size() <= 40
+        && (
+          !request.resource.data.keys().hasAny(['phone'])
+          || (request.resource.data.phone is string && request.resource.data.phone.size() <= 40)
+        )
         && request.resource.data.city in ['Gaborone', 'Francistown']
         && request.resource.data.fulfilment in ['Delivery', 'Pickup', 'Need help deciding']
         && request.resource.data.itemsText is string

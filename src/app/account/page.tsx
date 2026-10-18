@@ -11,7 +11,7 @@ function authError(error: unknown) {
   if (code === "auth/operation-not-allowed") return "Enable Anonymous and Google sign-in providers in Firebase Authentication.";
   if (code === "auth/unauthorized-domain") return "Add this website’s domain to Firebase Authentication’s authorised domains.";
   if (code === "auth/popup-closed-by-user") return "Google sign-in was cancelled.";
-  if (code === "auth/credential-already-in-use" || code === "auth/account-exists-with-different-credential") return "That Google account already exists. To avoid losing access to this guest session’s requests, we have not switched accounts or merged histories. Keep using this browser session or ask Strata for help.";
+  if (code === "auth/credential-already-in-use" || code === "auth/account-exists-with-different-credential") return "That Google account already exists. To avoid losing access to this guest session’s requests, we have not switched accounts or merged histories. Continue using this browser session.";
   if (code === "permission-denied" || code === "firestore/permission-denied") return "Firebase denied access to these requests. Check that the current Strata Firestore rules are published.";
   return "We could not complete that action. Check your connection and Firebase setup, then try again.";
 }
@@ -92,15 +92,15 @@ export default function AccountPage() {
         <p className="strataEyebrow">YOUR STRATA · YOUR REQUESTS</p>
         <h1>GOOD TO<br/><em>SEE YOU.</em></h1>
         <p>Track requests sent from this browser. You can browse and order as a guest; connecting Google is optional and helps you return to this account.</p>
-        <div className="strataOrderNotice"><strong>ORDER STATUS</strong><span>A status update is not a payment receipt or delivery guarantee. Strata must confirm price, availability and fulfilment details directly with you.</span></div>
+        <div className="strataOrderNotice"><strong>ORDER STATUS</strong><span>Status and staff messages appear here. A saved request is not final acceptance, a payment receipt or a delivery guarantee.</span></div>
         <button id="strataGoogleButton" className="strataButton strataButtonOutline strataGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy || !user || !hasFirebaseWebConfig}>{busy ? "CONNECTING…" : user?.isAnonymous ? "CONNECT GOOGLE ACCOUNT ↗" : user ? (user.providerData.some(item => item.providerId === "google.com") ? "GOOGLE ACCOUNT CONNECTED" : "CONNECT GOOGLE ACCOUNT ↗") : "GOOGLE SIGN-IN UNAVAILABLE"}</button>
         {user && <p className="strataAccountIdentity">{user.isAnonymous ? "Guest session active on this browser." : "Connected account: " + (user.email || user.displayName || "Google account")}</p>}
         {message && <p className="strataConnectionNotice" role="status">{message}</p>}
       </div>
       {showPostSubmitSetup && <section className="strataPostSubmitSetup" aria-labelledby="strataPostSubmitTitle">
         <p className="strataEyebrow">YOUR REQUEST IS SAVED</p>
-        <h2 id="strataPostSubmitTitle">Keep your order journey simple.</h2>
-        <p>Your request stays attached to this browser session. Check the status below. If you want easier access when changing devices, you can optionally connect Google; this does not confirm your order or charge you.</p>
+        <h2 id="strataPostSubmitTitle">Keep your orders together.</h2>
+        <p>Your request is saved in this browser session. Follow its status and staff messages below. If you want easier access to this same customer session on another device, you can optionally connect Google. This does not change your request, confirm fulfilment or charge you.</p>
         <div className="strataPostSubmitActions">
           <a className="strataButton strataButtonRed" href="#request-history">VIEW REQUEST STATUS ↓</a>
           <a className="strataButton strataButtonOutline" href="#strataGoogleButton">SECURE HISTORY (OPTIONAL) ↗</a>

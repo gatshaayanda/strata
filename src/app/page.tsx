@@ -93,7 +93,6 @@ export default function Home() {
         </div>
         <div className="strataMenuPrompt">
           <div><span className="strataEyebrow">A CLEAR PROMISE</span><h3>Your request stays in Strata.</h3><p>Submitting a request does not charge you or automatically confirm availability, final price, delivery fees or timing. Strata will update the request after review.</p></div>
-          <a className="strataButton strataButtonRed" href="#locations">CHOOSE A BRANCH <span>↗</span></a>
         </div>
       </section>
 
@@ -111,7 +110,7 @@ export default function Home() {
         <video autoPlay muted loop playsInline preload="metadata" poster="/strata-assets/fish.jpeg" aria-label="Strata Sa’o Bitsa video">
           <source src="/strata-assets/stat.mp4" type="video/mp4" />
         </video>
-        <div className="strataFilmOverlay"><p className="strataEyebrow">STRAIGHT FROM THE SCENE</p><h2>YOU KNOW<br />THE <em>VIBE.</em></h2><a href="#locations">START YOUR ORDER ↗</a></div>
+        <div className="strataFilmOverlay"><p className="strataEyebrow">STRAIGHT FROM THE SCENE</p><h2>YOU KNOW<br />THE <em>VIBE.</em></h2></div>
         <span className="strataFilmCaption">STRATA SA’O BITSA · COME GET HOOKED</span>
       </section>
 

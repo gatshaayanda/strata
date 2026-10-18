@@ -27,7 +27,7 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 - The customer account page has been replaced. Legacy Plug request/admin subroutes remain redirected; `/admin` is now an alias redirecting to Strata `/operations`.
 - The Strata server endpoint `/api/operations-login` checks `STRATA_OPERATIONS_WORD` and issues a Firebase custom token using `FIREBASE_ADMIN_KEY`. UploadThing handler is enabled at `/api/uploadthing`; configure `UPLOADTHING_TOKEN` before expecting uploads to work. The endpoint currently accepts the legacy image/PDF router limits; no upload UI or upload persistence workflow is yet part of the customer ordering journey.
 - Removed inherited Firebase rules deployment workflow and scheduled Plug production reminder workflow. Workflow run `38371808720` failed while writing the Firebase service account; the deployment step was skipped. No Firebase rules deployment was performed by that run.
-- Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or automatic outbound WhatsApp messaging. Do not describe these as implemented.
+- Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or outbound notification delivery. Do not describe these as implemented.
 - Missing visual asset at prior copy checkpoint: `image_987b17.png`.
 - No local build, live Firebase rules test, deployed customer journey, PWA install, or physical-device iOS test has been verified in this checkpoint.
 
@@ -59,7 +59,7 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 
 - The public app exists to help customers submit and follow food-order requests for the **Gaborone** or **Francistown** branch.
 - No public WhatsApp links, messaging handoffs, business phone numbers, telephone CTAs, or "contact us for the menu" detours. The primary and secondary customer actions must remain within Strata.
-- Customer contact details entered on an order are different from business contact details. Collect a customer phone number only as an optional fulfilment aid, explain why it may be used, and never display the business phone number.
+- Do not collect or display customer phone numbers or publish business phone numbers. Do not add WhatsApp links, telephone links, external messaging handoffs or contact-us detours. Customers follow request status and staff messages inside My Requests. Legacy phone values may remain in old records for compatibility, but must not be surfaced in the current UI or copied into new requests.
 - Do not invent a live menu, product names, prices, stock, delivery fee, service radius, opening hours, payment options, collection slot, or ETA. The current order form accepts an item-and-quantity description because an approved structured catalogue and prices have not yet been evidenced. Do not call it a full cart/checkout until a real catalogue, price calculation and fulfilment rules exist.
 - A submitted request is not a confirmed order, payment receipt, delivery guarantee, or evidence that the branch has accepted the request. Only display a reference after Firestore confirms the write.
 - No installation or account is required to browse or submit an order. Google linking is optional and must never block a guest order.
@@ -68,14 +68,19 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 
 1. **Discover:** one concise hero with the Strata promise and a single primary action, “Choose your branch”. Keep “My Requests” available but secondary.
 2. **Choose location:** the customer explicitly chooses Gaborone or Francistown. Branch choice travels into /order?city=Gaborone or /order?city=Francistown; a direct visit to /order must not silently default the customer to a city.
-3. **Describe the order:** collect name, branch, fulfilment method, requested items/quantities, delivery area only when delivery is selected, optional customer phone and optional order note. Use persistent labels, explicit required/optional language, sensible input autocomplete and only reveal conditional fields when needed.
-4. **Review and submit:** the submit label says “Submit order request”, not “Pay”, “Buy now” or “Confirm order”. Disable duplicate submission while saving. Retain entered details after offline/network errors. Explain a phone field's fulfilment purpose rather than asking for a number without context.
+3. **Describe the order:** collect name, branch, fulfilment method, requested items/quantities, delivery area only when delivery is selected, and an optional order note. Do not collect a customer phone number. Use persistent labels, explicit required/optional language, sensible input autocomplete and only reveal conditional fields when needed.
+4. **Review and submit:** the submit label says “Submit order request”, not “Pay”, “Buy now” or “Confirm order”. Disable duplicate submission while saving. Retain entered details after offline/network errors. Do not ask for phone/contact details; tell customers to follow progress and staff messages in My Requests.
 5. **Confirm receipt:** show success only after the Firestore write resolves. Display the request reference, selected branch, clear next steps, and the difference between saved request and confirmed order. If saving fails, do not show a reference or claim success.
 6. **Return:** My Requests shows the current browser session's requests and status/staff messages. Never expose another customer's requests. A request/status change does not imply payment or delivery is complete.
 7. **Optional account continuity:** after a request is saved, offer a calm, skippable explanation that Google can help retain access to order history on another device. Do not interrupt order completion with forced registration. Do not promise histories from separate Firebase identities will merge automatically.
 8. **Staff handoff:** the Operations queue is the internal source of truth for reviewing requests and writing status/messages. Staff messages appear in My Requests; do not claim SMS, push, email or WhatsApp notification delivery unless that integration is implemented and receipt verified.
 
 ### Visual hierarchy and behavioural design
+
+- The landing page is a task-entry page, not a contact directory: one strong hero action leads to two unmistakable branch choices. Keep My Requests secondary. Remove redundant repeated CTAs from editorial/photo sections when they compete with the branch chooser.
+- The customer confirmation screen must acknowledge the saved request, show a concise summary (branch, fulfilment, requested items, delivery location only when applicable), and provide one dominant next action to My Requests. Avoid two buttons that lead to the same destination.
+- Keep updates inside Strata. No customer phone fields, business phone numbers, WhatsApp, SMS, or external contact workflow. Explain this through concise copy so customers know where to return for updates.
+
 
 - Follow the Sefalana Shop & Collect pattern of a bold, image-led hero, an immediately visible primary action, scannable content blocks and a persistent, understandable route toward the core task. Adapt it to food ordering; do not copy Sefalana's alcohol catalogue, age gate, pilot labels, synthetic products, sample pricing, or nonfunctional demo checkout.
 - Follow Tripple S's useful post-submit onboarding pattern: acknowledge the saved request first, explain the next step, and offer optional account continuity without interrupting the task. Do not copy clinic-specific features, health content, appointment flows, or irrelevant profile fields.
@@ -89,10 +94,12 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 
 Use evidence to reduce friction, not to justify arbitrary simplification. The following research informed the journey:
 
-- Baymard Institute, *Checkout UX 2025: 10 Pitfalls and Best Practices* (updated 25 Nov 2025): https://baymard.com/research-articles/current-state-of-checkout-ux — supports prominent guest checkout, clear fulfilment choices, appropriate optional-field handling, adaptive errors and explaining why a phone number is requested.
+- Baymard Institute, *Checkout UX 2025: 10 Pitfalls and Best Practices* (updated 25 Nov 2025): https://baymard.com/research-articles/current-state-of-checkout-ux — supports prominent guest checkout, clear fulfilment choices, appropriate optional-field handling and adaptive error recovery. Strata intentionally omits contact-number collection because updates are handled inside My Requests.
 - Baymard Institute, *Make “Guest Checkout” the Most Prominent Option* (17 Jan 2023): https://baymard.com/research-articles/make-guest-checkout-prominent — supports keeping guest ordering obvious rather than forcing registration or hiding it behind a secondary link.
 - Baymard Institute, *Checkout UX: Optimize Your Order Flow*: https://baymard.com/blog/checkout-flow-ux-optimization — supports concise field sets, persistent labels, scannability, transparent progress and retaining a path back without losing entered data.
 - Scheibehenne, Greifeneder & Todd, *Choice overload: A conceptual review and meta-analysis*, Journal of Consumer Psychology 25(2), 333–358 (2015), DOI: https://doi.org/10.1016/j.jcps.2014.08.002 — meta-analysis of 99 observations (N=7,202) found that choice overload depends on complexity, task difficulty, preference uncertainty and decision goals. Therefore, keep the first decision to branch choice; do not assume that fewer options alone always improve decisions.
+- Nielsen Norman Group, *Onboarding Tutorials vs. Contextual Help*: https://www.nngroup.com/articles/onboarding-tutorials/ — recommends progressive disclosure, contextual help at the point of need, and avoiding unnecessary instruction before users are ready. Strata therefore explains the request outcome first and offers account continuity only after successful submission.
+- W3C Web Accessibility Initiative, *Labeling Controls*: https://www.w3.org/WAI/tutorials/forms/labels/ — supports persistent, associated form labels and explicit instructions for all controls.
 - Apply these findings contextually: explicit branch choice reduces wrong-branch ambiguity; a short request form reduces irrelevant effort; transparent status copy avoids false expectations; optional account linking preserves autonomy; and clear error recovery helps users continue after connectivity failures.
 
 ### Regression gates for the public journey
@@ -103,12 +110,15 @@ Use evidence to reduce friction, not to justify arbitrary simplification. The fo
 - Confirm no product prices, availability, delivery fees or ETA are fabricated.
 - Confirm failed/offline submission retains form input and never displays a success reference.
 - Confirm a successful request can be found in My Requests in the same browser session, with status/message updates still working.
+- Confirm new requests omit the phone field; Firestore rules accept the field being absent while continuing to allow older records with a legacy phone field.
+- Confirm the Operations UI does not render historical phone values or generate telephone links.
 - Confirm Google linking is optional, the post-submit prompt is dismissible by simply continuing, and customer history remains private.
 - Run identity verification, TypeScript, lint and production build on the exact candidate commit. Then separately verify deployed behavior and real-device/PWA/offline behavior. Do not infer runtime success from a source diff or build alone.
 
 ### Recovery checkpoint
 
 - Pre-change preserved source: main at f64805a369cc96cada54ff4fc59f965eafaca0d3 (13 Oct 2026).
-- Recovery branch: checkpoint/strata-before-order-flow-2026-10-18.
-- Implementation branch for this controlled slice: feat/order-first-customer-flow-2026-10-18.
-- Do not rewrite or delete the recovery branch. Keep unrelated operational/PWA/security behavior intact while refining the customer flow.
+- Exact pre-change baseline for this slice: `main` at `07344a1559c06bac2eb8c573c89a54d5159dd9f7` (18 Oct 2026).
+- Preserved recovery branch created before this slice: `checkpoint/strata-before-location-onboarding-2026-10-18`.
+- Earlier recovery branch `checkpoint/strata-before-order-flow-2026-10-18` is also retained; do not rewrite or delete either checkpoint.
+- Changes for this slice are committed directly to `main` as explicitly requested. If regression occurs, inspect the diff first and recover from the preserved checkpoint; do not force-reset `main` without owner approval.

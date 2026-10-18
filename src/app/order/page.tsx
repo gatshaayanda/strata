@@ -26,7 +26,6 @@ export default function OrderPage() {
   const [fulfilment, setFulfilment] = useState<Fulfilment | "">("");
   const [items, setItems] = useState("");
   const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [offline, setOffline] = useState(false);
@@ -75,7 +74,6 @@ export default function OrderPage() {
       const id = await createStrataOrderRequest({
         customerId: user.uid,
         customerName: name.trim(),
-        phone: phone.trim(),
         city,
         fulfilment,
         itemsText: items.trim(),
@@ -113,11 +111,16 @@ export default function OrderPage() {
         <p className="strataEyebrow">REQUEST SAVED</p>
         <h2>WE’VE GOT<br /><em>YOUR REQUEST.</em></h2>
         <p>Your reference is:</p><code className="strataOrderReference">{orderId}</code>
+        <div className="strataOrderSummary" aria-label="Saved request summary">
+          <p><strong>Branch</strong><span>{city}</span></p>
+          <p><strong>Fulfilment</strong><span>{fulfilment}</span></p>
+          <p><strong>Requested items</strong><span>{items}</span></p>
+          {fulfilment === "Delivery" && address.trim() && <p><strong>Delivery location</strong><span>{address}</span></p>}
+        </div>
         <p>{message}</p>
         <Link className="strataButton strataButtonRed" href="/account?submitted=1">VIEW REQUEST STATUS <span>→</span></Link>
-        <p className="strataFormFootnote">Want to return to your order history from another device? You can optionally connect Google under My Requests. No account is required to place an order.</p>
-        <Link className="strataButton strataButtonOutline" href="/account?submitted=1">KEEP MY ORDER HISTORY (OPTIONAL) ↗</Link>
-        <button type="button" className="strataTextButton" onClick={() => { setOrderId(""); setItems(""); setNotes(""); setAddress(""); setPhone(""); setMessage(""); }}>Start another request</button>
+        <p className="strataFormFootnote">Your request updates stay in My Requests. Account linking is optional and will be offered there after you can see your saved request.</p>
+        <button type="button" className="strataTextButton" onClick={() => { setOrderId(""); setItems(""); setNotes(""); setAddress(""); setMessage(""); }}>Start another request</button>
       </section> : <form className="strataOrderForm" onSubmit={submit}>
         <label>Your name<input required maxLength={80} autoComplete="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name for the order" /></label>
         <div className="strataFormRow">
@@ -126,12 +129,11 @@ export default function OrderPage() {
         </div>
         <label>What would you like?<textarea required minLength={3} maxLength={1200} rows={4} value={items} onChange={e => setItems(e.target.value)} placeholder="List the items and quantities you would like to order." /></label>
         {fulfilment === "Delivery" && <label>Delivery location / area<input required maxLength={240} autoComplete="street-address" value={address} onChange={e => setAddress(e.target.value)} placeholder="Area, plot or useful landmark" /></label>}
-        <label>Contact number (optional)<input type="tel" maxLength={40} autoComplete="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Number the branch can reach you on" /><small className="strataFieldHelp">Only used if the branch needs to clarify your order or delivery details.</small></label>
         <label>Anything else? (optional)<textarea maxLength={600} rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timing, directions or other order details" /></label>
         <button className="strataButton strataButtonRed strataSubmitOrder" type="submit" disabled={busy || offline || !hasFirebaseWebConfig}>{busy ? "SAVING REQUEST…" : offline ? "CONNECT TO SEND REQUEST" : "SUBMIT ORDER REQUEST"} <span>↗</span></button>
         {!hasFirebaseWebConfig && <p className="strataFormFootnote" role="status">Firebase web configuration is missing, so saving is disabled until the deployment environment is configured.</p>}
         {message && <p className="strataConnectionNotice" role="alert">{message}</p>}
-        <p className="strataFormFootnote">A request reference appears only after Strata confirms it was saved. Order status is not a payment receipt or delivery guarantee. You can browse and submit as a guest; Google is optional for keeping history easier to access later.</p>
+        <p className="strataFormFootnote">A request reference appears only after Strata confirms it was saved. Order status is not a payment receipt or delivery guarantee. Submit as a guest; Google is optional for keeping history easier to access later. Check My Requests for updates.</p>
       </form>}
     </section>
     <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><span>FISH. CHIPS. GOOD TIMES.</span><Link href="/account">MY REQUESTS ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>

@@ -1,55 +1,66 @@
 # Strata Sa’o Bitsa
 
-**COME GET HOOKED.** A mobile-first food storefront and progressive web app for Strata Sa’o Bitsa in Botswana, intended for Gaborone and Francistown.
+**COME GET HOOKED.** A mobile-first ordering PWA for Strata Sa’o Bitsa in Botswana, serving the intended Gaborone and Francistown markets.
 
-## Current implementation checkpoint
+## Customer journey
 
-- Branded storefront with supplied food/customer photography and short video.
-- Guest order-request form at `/order`. The customer does not need to sign in or install the PWA. The app silently creates a Firebase anonymous-auth session, saves a request to Firestore, and displays a request reference only after Firestore confirms the write.
-- `/account` lists requests belonging to the current browser/customer UID and receives live status updates. Customers can optionally link Google sign-in to their anonymous session.
-- `/operations` is a separate staff queue. Access requires Google sign-in and a manually provisioned `admins/{uid}` document with role `owner` or `staff`. Staff can update request status and a customer-facing note.
-- WhatsApp follow-up is available from the order confirmation and request history.
-- The PWA caches the public homepage, the order-form shell and visual assets. Offline, customers can open the saved shell and fill in the form; submission and request history require a connection. The UI explicitly blocks submission while offline.
-- Customer and staff data are not cached by the service worker. The app is usable without installation.
+1. The homepage introduces Strata and asks customers to choose **Gaborone** or **Francistown**.
+2. The selected city is carried into the order request. Visiting `/order` directly does not silently choose a branch.
+3. Customers enter their name, fulfilment preference, requested items and quantities, a delivery location only when delivery is selected, and an optional order note.
+4. Customers submit a request without creating an account or installing the PWA. A reference appears only after Firestore confirms the save.
+5. The success view summarises the branch, fulfilment choice, requested items and delivery location when applicable.
+6. **My Requests** (`/account`) shows the current customer session’s request history and live staff status/messages. Google linking is optional and offered as account continuity, not as a prerequisite to order.
 
-**Important boundary:** this is an order-request and fulfilment-status flow, not full online checkout. There is no verified menu/price catalogue, automatic total calculation, online payment, guaranteed delivery availability, push notification or automatic WhatsApp message delivery. Strata must confirm price, availability, delivery charge and timing with the customer.
+The customer-facing journey has no WhatsApp handoff, business phone number, telephone CTA or customer phone-number field. Staff updates are shown inside My Requests; there is no implemented SMS, email, push or external messaging delivery. Older Firestore records may still contain a legacy `phone` field, but the current interface no longer displays or collects it.
 
-## Firebase setup required before testing
+## Important product boundaries
 
-Firebase web configuration is intentionally not guessed. The project identifier known for Strata is `strata-6706b`, but the actual Web App values and console configuration must be confirmed in Firebase Console.
+This is an **order-request workflow**, not a complete cart/checkout or payment system. There is no verified live menu/catalogue, price calculation, online payment, inventory integration, delivery-zone/fee engine, guaranteed availability, confirmed collection slot or ETA. Do not invent menu items, prices, hours, delivery terms or payment methods. Staff must review and update each request before it is represented as confirmed.
 
-1. Open Firebase Console and select project `strata-6706b`.
-2. Under **Project settings → General → Your apps**, register or select a Web app and copy its config values.
-3. Set these values in Vercel Environment Variables for the deployment you will test, and in a local `.env.local` if testing locally:
+The app is usable in a normal browser and does not require installation. The service worker caches public shell/media assets; submitting a request and loading private request history require connectivity. Offline cache configuration alone does not prove actual device playback or installation behavior.
+
+## Firebase setup
+
+The known Firebase project identifier is `strata-6706b`; verify the real Firebase Web App configuration in Firebase Console instead of guessing it.
+
+1. In **Project settings → General → Your apps**, select/register the Web app and configure these deployment variables:
    - `NEXT_PUBLIC_FIREBASE_API_KEY`
    - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-   - `NEXT_PUBLIC_FIREBASE_PROJECT_ID` (must be `strata-6706b`)
+   - `NEXT_PUBLIC_FIREBASE_PROJECT_ID` (expected: `strata-6706b`)
    - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
    - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
    - `NEXT_PUBLIC_FIREBASE_APP_ID`
-4. In **Authentication → Sign-in method**, enable **Anonymous** and **Google**.
-5. In **Authentication → Settings → Authorized domains**, add the exact deployed hostname you will use. Add `localhost` if running locally.
-6. In **Firestore Database → Rules**, paste the contents of `firestore.rules` from this repository and publish them. These are Strata-only rules; they intentionally deny access to all other collections. `storage.rules` denies all Storage access because uploads are not part of this first flow.
-7. To provision the owner: visit `/operations` and attempt Google sign-in. In **Authentication → Users**, find that Google user and copy its UID. In **Firestore → Data**, create a document in collection `admins` whose document ID is exactly that UID, with one field: `role` (string) = `owner`. The rules intentionally prohibit clients from creating or changing admin roles. Return to `/operations` and sign in again. Add staff the same way with role `staff`.
+2. In **Authentication → Sign-in method**, enable **Anonymous**. Enable **Google** only for the optional account-linking flow.
+3. Add the exact deployed hostname under **Authentication → Settings → Authorized domains**.
+4. Publish the current `firestore.rules`. It allows guest-created order requests without a phone field, permits legacy phone fields for compatibility, and keeps customer reads scoped to their own UID. It does not delete or migrate existing records.
+5. Configure server-only `FIREBASE_ADMIN_KEY` with the service-account JSON for the same Firebase project and a private `STRATA_OPERATIONS_WORD`. Never expose these values using `NEXT_PUBLIC_*` variables. The Operations endpoint validates the word server-side and issues a Firebase custom token; the Operations UI still checks the admin role before subscribing to the order queue.
+6. `UPLOADTHING_TOKEN` is only needed if a future upload interface is added; no customer upload workflow is currently part of ordering. Firebase Storage client access remains denied.
 
-The web config values are public client configuration, not service-account credentials. Never put a Firebase Admin service-account JSON, private key or other server secret in a `NEXT_PUBLIC_*` variable.
+## Operations
 
-## QA flow
+- Staff queue: `/operations`; `/admin` redirects to it.
+- Staff can review branch, fulfilment, requested items, delivery location and notes; update status and save a customer-facing message.
+- Customer updates are visible in My Requests when connected. No external notification delivery is implemented.
+- The Operations access-word endpoint currently uses a fixed temporary operations role document. Use a strong private word and treat this as a controlled interim access method, not a substitute for a fully managed staff identity lifecycle. Rate limiting has not been verified as implemented.
 
-1. Open the deployed site in a normal phone browser. The site should browse without signing in or installing.
-2. Open **Build Order**, complete the form and submit while online.
-3. Confirm that a reference is displayed only after the save succeeds.
-4. Open **My Requests** in the same browser. Confirm the request appears and its status is `New`.
-5. Open `/operations` with the provisioned owner account. Update the request status and add a message.
-6. Return to **My Requests** and confirm the status and message update live.
-7. Install the PWA if the browser offers it. Reopen it and confirm the same customer session/requests remain available.
-8. Load the homepage and order form while online, then turn on airplane mode. Confirm the public shell and form reopen, the offline notice appears, and the form cannot claim to submit. Restore the connection and submit a test request.
-9. Test iOS Safari separately; this repository has not yet been verified on a physical iPhone.
+## QA acceptance checklist
 
-## Development and checks
+- [ ] Homepage has one clear primary route to choose a branch and no public WhatsApp/phone contact CTA.
+- [ ] Gaborone and Francistown links carry the correct city into `/order`; direct visits require an explicit branch selection.
+- [ ] Pickup does not request a delivery location; delivery does.
+- [ ] No customer phone field is shown or collected; old phone values are not rendered by the Operations UI.
+- [ ] Invalid, offline or failed submissions retain form values and never display a successful reference.
+- [ ] Successful submission shows the reference and accurate request summary only after the Firestore write resolves.
+- [ ] My Requests displays only the current UID’s history; status and staff-message updates appear there.
+- [ ] Google linking is optional and does not interrupt ordering.
+- [ ] Publish and test the current Firestore rules in Firebase before relying on the deployed order flow.
+- [ ] Run identity verification, TypeScript, lint and production build on the exact candidate commit.
+- [ ] Separately test the deployed customer journey, PWA install, offline shell/media and Android/iOS behavior on real devices.
+
+## Development
 
 ```bash
-npm install
+npm ci
 npm run dev
 npm run verify:identity
 npx tsc --noEmit
@@ -66,8 +77,6 @@ npm run build
 - `public/strata-assets/customers.jpeg`
 - `public/strata-assets/stat.mp4`
 
-The additionally expected `image_987b17.png` was not found at the asset-copy checkpoint.
+## Evidence boundary
 
-## Evidence and deployment boundary
-
-GitHub commits do not prove that Firebase has been configured, that a deployment is current, that a production build passes, or that a phone install/customer journey works. The inherited auto-deploy and scheduled reminder workflows were removed. The rules-deploy workflow run failed before its service-account step completed, and its deployment step was skipped; no Firebase rules deployment was performed by that run. The owner must complete the Firebase console setup and run the QA flow above; report actual results before treating the flow as production-ready.
+A GitHub commit is not proof of a successful build, deployed behavior, configured Firebase rules, or real-device PWA behavior. GitHub Actions is configured to run TypeScript, lint and production build on pushes to `main`; report the exact run result before treating those checks as passed. Do not deploy manually from this workflow unless the product owner explicitly asks.

@@ -1109,3 +1109,12 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 @media (prefers-reduced-motion: reduce) {
   .strataOrderFirstHome .strataBranchCard img { transition: none; }
 }
+
+
+/* Saved-request summary: confirm the branch and fulfilment choice without adding another checkout step. */
+.strataOrderSummary{display:grid;gap:0;margin:8px 0 4px;border:1px solid #d8cfc2;background:#fff}
+.strataOrderSummary p{display:grid;grid-template-columns:minmax(100px,.34fr) minmax(0,1fr);gap:14px;margin:0;padding:12px 14px;border-bottom:1px solid #eee8df;font-size:.84rem;line-height:1.5}
+.strataOrderSummary p:last-child{border-bottom:0}
+.strataOrderSummary strong{font-size:.69rem;letter-spacing:.04em;text-transform:uppercase;color:#5d554b}
+.strataOrderSummary span{overflow-wrap:anywhere;white-space:pre-wrap}
+@media(max-width:560px){.strataOrderSummary p{grid-template-columns:1fr;gap:4px;padding:11px 12px}}
