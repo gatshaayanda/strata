@@ -10,7 +10,7 @@ const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;
 export const metadata: Metadata = {
   ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
   title: { default: "Strata Sa’o Bitsa | Come Get Hooked", template: "%s | Strata Sa’o Bitsa" },
-  description: "Fish, chips and good times. Contact Strata Sa’o Bitsa for today’s menu, prices and ordering in Gaborone and Francistown, Botswana.",
+  description: "Order from Strata Sa’o Bitsa in Gaborone or Francistown. Choose your branch, send an order request and track updates in one place.",
   applicationName: "Strata Sa’o Bitsa",
   keywords: ["Strata Sa’o Bitsa", "fish and chips", "food", "Botswana", "Gaborone", "Francistown"],
   openGraph: { type: "website", siteName: "Strata Sa’o Bitsa", title: "Strata Sa’o Bitsa | Come Get Hooked", description: "Fish, chips and good times. Come get hooked." },
