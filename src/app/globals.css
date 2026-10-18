@@ -926,3 +926,186 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .strataOperationsFootnote code{color:#fff}
 @media(max-width:820px){.strataAccountLayout{grid-template-columns:1fr;padding:38px 18px 55px;gap:35px}.strataOperationsWrap{padding:38px 18px 55px}.strataOperationsControls{grid-template-columns:1fr 1fr}.strataOperationsControls label:nth-child(2){grid-column:1/-1}.strataOperationsControls .strataButton{grid-column:1/-1}}
 @media(max-width:520px){.strataOrderHeaderLinks{gap:6px}.strataOrderHeaderLinks .strataHeaderCta{font-size:.56rem;padding:11px 8px}.strataAccountOrder{padding:15px}.strataAccountOrderTop{flex-direction:column}.strataOperationsOrder{padding:15px}.strataOperationsOrderTop{flex-direction:column}.strataOperationsBar{font-size:.62rem;flex-direction:column}.strataOperationsControls{grid-template-columns:1fr}.strataOperationsControls label:nth-child(2),.strataOperationsControls .strataButton{grid-column:auto}}
+
+
+/* Strata order-first customer journey: clear branch choice, calm onboarding, mobile-first controls. */
+.strataOrderFirstHome .strataHeader nav a:focus-visible,
+.strataOrderFirstHome .strataHeaderCta:focus-visible,
+.strataOrderFirstHome .strataBranchCard:focus-visible,
+.strataOrderFirstHome .strataButton:focus-visible,
+.strataAccountPage .strataPostSubmitActions a:focus-visible {
+  outline: 3px solid #ff777b;
+  outline-offset: 4px;
+}
+.strataOrderFirstHome .strataHero {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .86fr);
+}
+.strataOrderFirstHome .strataHeroCopy { max-width: 720px; }
+.strataOrderFirstHome .strataBranchChooser {
+  align-items: start;
+  background: #171515;
+}
+.strataOrderFirstHome .strataBranchIntro h2 { color: #fff; }
+.strataOrderFirstHome .strataBranchIntro > p:last-child {
+  max-width: 440px;
+  color: #c7c0b9;
+  line-height: 1.7;
+}
+.strataOrderFirstHome .strataBranchTruth {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--s-red);
+  background: #242020;
+  font-size: .82rem;
+}
+.strataOrderFirstHome .strataBranchCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.strataOrderFirstHome .strataBranchCard {
+  position: relative;
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 9px;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid #5b5550;
+  background: #242020;
+  isolation: isolate;
+}
+.strataOrderFirstHome .strataBranchCard img,
+.strataOrderFirstHome .strataBranchCardShade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+}
+.strataOrderFirstHome .strataBranchCard img { object-fit: cover; transition: transform .35s ease; }
+.strataOrderFirstHome .strataBranchCardShade {
+  z-index: -1;
+  background: linear-gradient(0deg, rgba(0,0,0,.92), rgba(0,0,0,.25) 76%);
+}
+.strataOrderFirstHome .strataBranchCard:hover img { transform: scale(1.035); }
+.strataOrderFirstHome .strataBranchNumber {
+  color: #ff999c;
+  font-size: .61rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+.strataOrderFirstHome .strataBranchCard strong {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  line-height: .95;
+  letter-spacing: .02em;
+}
+.strataOrderFirstHome .strataBranchCard small { color: #f0e9e2; font-size: .78rem; line-height: 1.5; }
+.strataOrderFirstHome .strataBranchCard b {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--s-red);
+  font-size: .69rem;
+  letter-spacing: .1em;
+}
+.strataOrderFirstHome .strataOrderSteps { background: var(--s-paper); color: #101010; }
+.strataOrderFirstHome .strataStepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.strataOrderFirstHome .strataStepGrid article {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid #ded7cc;
+  background: #fff;
+}
+.strataOrderFirstHome .strataStepGrid article > span {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  background: var(--s-red);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 950;
+}
+.strataOrderFirstHome .strataStepGrid h3 {
+  margin: 22px 0 9px;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+  line-height: 1;
+}
+.strataOrderFirstHome .strataStepGrid p { margin: 0; color: #57514c; font-size: .88rem; line-height: 1.65; }
+.strataOrderFirstHome .strataPhotoStory { padding: clamp(58px, 8vw, 100px) 8vw; background: #f5f1e9; color: #101010; }
+.strataOrderFirstHome .strataPhotoStoryHeading { display: flex; align-items: end; justify-content: space-between; gap: 25px; margin-bottom: 30px; }
+.strataOrderFirstHome .strataPhotoStoryHeading h2 {
+  margin: 0;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(2.8rem, 6.5vw, 6rem);
+  line-height: .88;
+}
+.strataOrderFirstHome .strataPhotoStoryHeading h2 em { color: var(--s-red); font-style: normal; }
+.strataOrderFirstHome .strataPhotoStoryHeading > p:last-child { max-width: 300px; color: #57514c; font-size: .9rem; line-height: 1.65; }
+.strataOrderFirstHome .strataOrderSteps .strataMenuPrompt { margin-top: 24px; }
+.strataFieldHelp { display: block; margin-top: 6px; color: #6b625b; font-size: .76rem; font-weight: 400; line-height: 1.5; }
+.strataPostSubmitSetup {
+  grid-column: 1 / -1;
+  margin: 0 0 22px;
+  padding: clamp(20px, 4vw, 34px);
+  border: 1px solid #4d4440;
+  border-left: 4px solid var(--s-red);
+  background: #211d1d;
+  color: #fff;
+}
+.strataPostSubmitSetup h2 {
+  margin: 0 0 12px;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: .98;
+}
+.strataPostSubmitSetup > p:not(.strataEyebrow) { max-width: 760px; color: #ded6ce; font-size: .9rem; line-height: 1.7; }
+.strataPostSubmitActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.strataOrderPage .strataOrderForm label { display: block; }
+.strataOrderPage .strataOrderForm label > small { font-weight: 400; }
+.strataOrderPage .strataFormRow select { min-width: 0; width: 100%; }
+.strataAccountPage .strataGoogleButton { scroll-margin-top: 24px; }
+.strataAccountPage .strataAccountOrders { scroll-margin-top: 24px; }
+@media (max-width: 900px) {
+  .strataOrderFirstHome .strataHero { grid-template-columns: minmax(0, 1fr) minmax(250px, .8fr); gap: 28px; }
+  .strataOrderFirstHome .strataBranchChooser { grid-template-columns: minmax(0, 1fr); gap: 25px; }
+}
+@media (max-width: 700px) {
+  .strataOrderFirstHome .strataHeader { align-items: center; flex-wrap: wrap; gap: 14px; }
+  .strataOrderFirstHome .strataHeader nav { order: 3; width: 100%; justify-content: space-between; gap: 12px; font-size: .62rem; }
+  .strataOrderFirstHome .strataHeaderCta { padding: 12px; }
+  .strataOrderFirstHome .strataHero { grid-template-columns: minmax(0, 1fr); padding: 44px 6vw 60px; }
+  .strataOrderFirstHome .strataHero h1 { font-size: clamp(4rem, 18vw, 6.5rem); }
+  .strataOrderFirstHome .strataHeroVisual { min-height: 340px; margin: 0 10px 0 18px; }
+  .strataOrderFirstHome .strataHeroVertical { display: none; }
+  .strataOrderFirstHome .strataHeroFoot { line-height: 1.7; }
+  .strataOrderFirstHome .strataBranchCards { grid-template-columns: minmax(0, 1fr); }
+  .strataOrderFirstHome .strataBranchCard { min-height: 270px; }
+  .strataOrderFirstHome .strataStepGrid { grid-template-columns: minmax(0, 1fr); }
+  .strataOrderFirstHome .strataPhotoStoryHeading { align-items: flex-start; flex-direction: column; }
+  .strataOrderFirstHome .strataPhotoGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 240px 200px 200px; }
+  .strataOrderFirstHome .strataPhotoLarge { grid-column: 1 / -1; grid-row: auto; }
+  .strataOrderFirstHome .strataPhotoStory { padding: 55px 6vw; }
+  .strataPostSubmitActions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .strataPostSubmitActions .strataButton { width: 100%; text-align: center; }
+}
+@media (max-width: 420px) {
+  .strataOrderFirstHome .strataTicker { gap: 8px; font-size: .55rem; letter-spacing: .06em; }
+  .strataOrderFirstHome .strataTicker span:nth-child(2) { display: none; }
+  .strataOrderFirstHome .strataHeader nav { flex-wrap: wrap; }
+  .strataOrderFirstHome .strataPhotoGrid { grid-template-columns: minmax(0, 1fr); grid-template-rows: 250px 200px 200px 200px; }
+  .strataOrderFirstHome .strataPhotoLarge { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .strataOrderFirstHome .strataBranchCard img { transition: none; }
+}
