@@ -80,8 +80,7 @@ const homePath = path.join(root, "src/app/page.tsx");
 const orderPath = path.join(root, "src/app/order/page.tsx");
 if (fs.existsSync(homePath)) {
   const home = fs.readFileSync(homePath, "utf8");
-  if (!home.includes("/order?city=Gaborone")) failures.push("storefront: missing Gaborone branch-to-order path");
-  if (!home.includes("/order?city=Francistown")) failures.push("storefront: missing Francistown branch-to-order path");
+  if (!home.includes('name: "Gaborone"') || !home.includes('name: "Francistown"') || !home.includes('"/order?city=" + encodeURIComponent(city.name)')) failures.push("storefront: both branch cards must route their selected city into the order form");
 }
 if (fs.existsSync(orderPath)) {
   const order = fs.readFileSync(orderPath, "utf8");
