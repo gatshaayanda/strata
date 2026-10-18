@@ -1118,3 +1118,60 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .strataOrderSummary strong{font-size:.69rem;letter-spacing:.04em;text-transform:uppercase;color:#5d554b}
 .strataOrderSummary span{overflow-wrap:anywhere;white-space:pre-wrap}
 @media(max-width:560px){.strataOrderSummary p{grid-template-columns:1fr;gap:4px;padding:11px 12px}}
+
+
+/* Strata's editable starter catalogue: same visual language as the existing storefront. */
+.strataMenuShowcase{padding:clamp(54px,7vw,96px) clamp(20px,6vw,90px);background:#f5f1e9;color:#171514}
+.strataMenuShowcaseHead{display:grid;grid-template-columns:1fr minmax(250px,.6fr);gap:32px;align-items:end;max-width:1280px;margin:0 auto 30px}
+.strataMenuShowcaseHead h2,.strataMenuAdminHead h2{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(3.2rem,6vw,5.6rem);line-height:.84;margin:0}
+.strataMenuShowcaseHead h2 em,.strataMenuAdminHead h2 em{font-style:normal;color:#e3262e}
+.strataMenuShowcaseHead>p{max-width:440px;color:#5b534b;line-height:1.7;margin:0 0 4px}
+.strataMenuCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:1280px;margin:auto}
+.strataMenuCard{min-width:0;background:#fff;border:1px solid #d9d0c5}
+.strataMenuCardImage{position:relative;height:220px;overflow:hidden;background:#211c1c}
+.strataMenuCardImage img{width:100%;height:100%;object-fit:cover;display:block}
+.strataMenuCardImage span{position:absolute;left:14px;bottom:14px;background:#e3262e;color:#fff;padding:8px 10px;font-size:.62rem;font-weight:950;letter-spacing:.1em}
+.strataMenuCardBody{padding:22px}
+.strataMenuCardTitle{display:flex;align-items:start;justify-content:space-between;gap:15px}
+.strataMenuCardTitle h3{font-size:clamp(1.5rem,3vw,2.1rem);margin:0;line-height:1.05}
+.strataMenuCardTitle>strong{white-space:nowrap;font-size:1.05rem}
+.strataMenuCardBody>p{min-height:42px;color:#625950;font-size:.9rem;line-height:1.6}
+.strataMenuCardBody .strataButton{margin-top:8px}
+.strataMenuDisclaimer{max-width:1280px;margin:20px auto 0;color:#6b6258;font-size:.72rem;line-height:1.6}
+.strataMenuEmpty{max-width:1280px;margin:auto;padding:28px;background:#fff}
+.strataMenuPicker{min-width:0;margin:0;padding:16px;border:1px solid #d0c6ba;background:#fff}
+.strataMenuPicker legend{padding:0 7px;font-size:.88rem;font-weight:950}
+.strataMenuPicker>p{margin:0 0 13px;color:#5d554d;font-size:.74rem;line-height:1.6}
+.strataMenuPickRow{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:14px;align-items:center;padding:13px 0;border-top:1px solid #e7e0d7}
+.strataMenuPickRow>div{display:grid;gap:4px;min-width:0}
+.strataMenuPickRow>div strong{font-size:.9rem}
+.strataMenuPickRow>div small{font-size:.73rem;font-weight:500;color:#625950;line-height:1.45}
+.strataMenuPickRow>div b{font-size:.76rem}
+.strataMenuPickRow>label{display:grid;gap:4px;font-size:.65rem;font-weight:900}
+.strataMenuPickRow select{min-height:42px!important;padding:7px!important}
+.strataMenuEstimate{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding:13px;background:#211c1c;color:#fff;font-size:.8rem}
+.strataMenuEstimate strong{font-size:1rem}
+.strataMenuAdmin{display:grid;gap:12px;margin-top:36px}
+.strataMenuAdminHead{display:flex;align-items:end;justify-content:space-between;gap:22px;margin-bottom:8px}
+.strataMenuAdminHead>div>p:last-child{max-width:550px;color:#d1cbc4;line-height:1.6}
+.strataMenuAdminEmpty{padding:18px;background:#211c1c;color:#e4ddd5;line-height:1.6}
+.strataMenuAdminItem{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px;padding:18px;background:#f5f1e9;color:#171514}
+.strataMenuAdminItem h3{margin:6px 0;font-size:1.15rem}
+.strataMenuAdminItem p{margin:0;color:#625950;font-size:.8rem;line-height:1.5}
+.strataMenuStatus{display:inline-block;font-size:.58rem;font-weight:950;letter-spacing:.08em;color:#8b332b}
+.strataMenuStatus.isActive{color:#246b36}
+.strataMenuAdminActions{display:flex;flex-wrap:wrap;gap:7px}
+.strataMenuAdminActions button{min-height:36px;padding:8px 10px;border:1px solid #bdb5ab;background:#fff;color:#171514;font-size:.62rem;font-weight:950;cursor:pointer}
+.strataMenuAdminActions button:disabled{opacity:.5}
+.strataMenuEditor{display:grid;gap:14px;margin-top:10px;padding:22px;background:#f5f1e9;color:#171514}
+.strataMenuEditor label{display:grid;gap:7px;font-size:.73rem;font-weight:900}
+.strataMenuEditor input:not([type=checkbox]){width:100%;min-height:46px;padding:11px;border:1px solid #bdb5ab;background:#fff;color:#171514;font:inherit;font-weight:500}
+.strataMenuEditorRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:end}
+.strataMenuEditor .strataMenuActiveToggle{display:flex;align-items:center;gap:10px;min-height:46px}
+.strataMenuEditor input[type=checkbox]{width:18px;height:18px;accent-color:#e3262e}
+.strataMenuEditorActions{display:flex;flex-wrap:wrap;gap:10px}
+.strataMenuEditorActions button{border:0;cursor:pointer}
+.strataMenuEditorActions button:disabled{opacity:.5}
+.strataOperationsPage .strataMenuAdminHead h2{font-size:clamp(2.8rem,5vw,4.5rem)}
+@media(max-width:760px){.strataMenuShowcase{padding:54px 18px}.strataMenuShowcaseHead{grid-template-columns:1fr;gap:17px}.strataMenuShowcaseHead h2{font-size:clamp(3.2rem,15vw,5rem)}.strataMenuCards{grid-template-columns:1fr}.strataMenuCardImage{height:200px}.strataMenuCardBody{padding:18px}.strataMenuAdminHead{align-items:start;flex-direction:column}.strataMenuAdminItem{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px}.strataMenuAdminActions{grid-column:1/-1}.strataMenuEditor{padding:16px}.strataMenuEditorRow{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.strataMenuCardImage img{transition:none}}

@@ -3,7 +3,7 @@
 ## Product
 Strata Sa’o Bitsa is a Botswana fish-and-chips/food business using **COME GET HOOKED**, with intended launch markets Gaborone and Francistown. The public product is an in-app ordering journey; do not publish business phone numbers or send customers to WhatsApp.
 
-The product goal is a mobile-first storefront and ordering/operations PWA. Browsing, guest ordering and website access must not require installation or customer sign-in. Never invent menu items/prices, opening hours, service points, delivery zones/fees, payment methods, delivery timing or customer demand.
+The product goal is a mobile-first storefront and ordering/operations PWA. Browsing, guest ordering and website access must not require installation or customer sign-in. The approved starter menu is Fish & Chips and Fish & Rice; both are seeded with editable provisional P70 prices. Fish & Chips at P70 is benchmarked against Lion Park Resort's published Gaborone menu; Fish & Rice at P70 is a provisional suggestion, not a verified Strata price. The business must confirm or edit these values. Never invent additional menu items, opening hours, service points, delivery zones/fees, payment methods, delivery timing or customer demand.
 
 ## Workflow and evidence
 - User is product owner/final reviewer; ChatGPT is technical navigator/implementation partner.
@@ -27,7 +27,7 @@ The product goal is a mobile-first storefront and ordering/operations PWA. Brows
 - The customer account page has been replaced. Legacy Plug request/admin subroutes remain redirected; `/admin` is now an alias redirecting to Strata `/operations`.
 - The Strata server endpoint `/api/operations-login` checks `STRATA_OPERATIONS_WORD` and issues a Firebase custom token using `FIREBASE_ADMIN_KEY`. UploadThing handler is enabled at `/api/uploadthing`; configure `UPLOADTHING_TOKEN` before expecting uploads to work. The endpoint currently accepts the legacy image/PDF router limits; no upload UI or upload persistence workflow is yet part of the customer ordering journey.
 - Removed inherited Firebase rules deployment workflow and scheduled Plug production reminder workflow. Workflow run `38371808720` failed while writing the Firebase service account; the deployment step was skipped. No Firebase rules deployment was performed by that run.
-- Known business gaps: no verified live menu/price catalogue, total calculation, online payment, delivery assignment, push notification or outbound notification delivery. Do not describe these as implemented.
+- Menu: `src/lib/firebase/strata-menu.ts` owns the public `strataMenu` collection and two starter records (Fish & Chips, Fish & Rice). The storefront and order form subscribe to current records. `/operations` supports publishing the starter items once, create/edit/delete, price changes, and show/hide. Public reads are allowed; only the Operations role can mutate menu records under `firestore.rules`. The P70 starter values are provisional and the business must confirm them. The order form displays a menu estimate and stores item/quantity/price snapshots in each request; no online payment, inventory, branch-specific pricing or stock control is implemented.\n- Remaining business gaps: delivery assignment, push notification and outbound notification delivery. Do not describe these as implemented.
 - Missing visual asset at prior copy checkpoint: `image_987b17.png`.
 - No local build, live Firebase rules test, deployed customer journey, PWA install, or physical-device iOS test has been verified in this checkpoint.
 
@@ -60,7 +60,7 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 - The public app exists to help customers submit and follow food-order requests for the **Gaborone** or **Francistown** branch.
 - No public WhatsApp links, messaging handoffs, business phone numbers, telephone CTAs, or "contact us for the menu" detours. The primary and secondary customer actions must remain within Strata.
 - Do not collect or display customer phone numbers or publish business phone numbers. Do not add WhatsApp links, telephone links, external messaging handoffs or contact-us detours. Customers follow request status and staff messages inside My Requests. Legacy phone values may remain in old records for compatibility, but must not be surfaced in the current UI or copied into new requests.
-- Do not invent a live menu, product names, prices, stock, delivery fee, service radius, opening hours, payment options, collection slot, or ETA. The current order form accepts an item-and-quantity description because an approved structured catalogue and prices have not yet been evidenced. Do not call it a full cart/checkout until a real catalogue, price calculation and fulfilment rules exist.
+- Use the two approved starter items only as seeded editable suggestions: Fish & Chips and Fish & Rice. Starter prices are provisional (P70 each); the business must confirm or edit them. Do not invent additional menu items, stock, delivery fee, service radius, opening hours, payment options, collection slot or ETA. The order form calculates a clearly labelled menu estimate from current editable prices but remains an order request, not a payment checkout.
 - A submitted request is not a confirmed order, payment receipt, delivery guarantee, or evidence that the branch has accepted the request. Only display a reference after Firestore confirms the write.
 - No installation or account is required to browse or submit an order. Google linking is optional and must never block a guest order.
 
@@ -68,7 +68,7 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 
 1. **Discover:** one concise hero with the Strata promise and a single primary action, “Choose your branch”. Keep “My Requests” available but secondary.
 2. **Choose location:** the customer explicitly chooses Gaborone or Francistown. Branch choice travels into /order?city=Gaborone or /order?city=Francistown; a direct visit to /order must not silently default the customer to a city.
-3. **Describe the order:** collect name, branch, fulfilment method, requested items/quantities, delivery area only when delivery is selected, and an optional order note. Do not collect a customer phone number. Use persistent labels, explicit required/optional language, sensible input autocomplete and only reveal conditional fields when needed.
+3. **Choose food and describe the order:** show the editable Fish & Chips and Fish & Rice starter catalogue with prices and quantity selectors; let customers choose quantities and add an optional special request. Collect name, branch and fulfilment method; request a delivery location only for delivery. Do not collect a customer phone number. Use persistent labels, explicit required/optional language, sensible input autocomplete and only reveal conditional fields when needed.
 4. **Review and submit:** the submit label says “Submit order request”, not “Pay”, “Buy now” or “Confirm order”. Disable duplicate submission while saving. Retain entered details after offline/network errors. Do not ask for phone/contact details; tell customers to follow progress and staff messages in My Requests.
 5. **Confirm receipt:** show success only after the Firestore write resolves. Display the request reference, selected branch, clear next steps, and the difference between saved request and confirmed order. If saving fails, do not show a reference or claim success.
 6. **Return:** My Requests shows the current browser session's requests and status/staff messages. Never expose another customer's requests. A request/status change does not imply payment or delivery is complete.
@@ -85,10 +85,18 @@ This section supersedes any earlier public-flow notes that imply customers shoul
 - Follow the Sefalana Shop & Collect pattern of a bold, image-led hero, an immediately visible primary action, scannable content blocks and a persistent, understandable route toward the core task. Adapt it to food ordering; do not copy Sefalana's alcohol catalogue, age gate, pilot labels, synthetic products, sample pricing, or nonfunctional demo checkout.
 - Follow Tripple S's useful post-submit onboarding pattern: acknowledge the saved request first, explain the next step, and offer optional account continuity without interrupting the task. Do not copy clinic-specific features, health content, appointment flows, or irrelevant profile fields.
 - Prefer one primary action per section, concise supporting copy, consistent button labels and clear visual grouping. Avoid duplicate search bars, repeated calls to action, unnecessary decorative panels, competing sticky banners, and dead-end links.
-- Keep branch selection visible before order details. Preserve branch selection when navigating to the order form. If a future catalogue is approved, filter it by the selected branch only when real branch availability data exists.
+- Keep branch selection visible before order details and preserve the selected city in the order form. The starter menu is shared across Gaborone and Francistown until the business provides verified branch-specific menu or availability data. Never imply that branch stock or price differences are known.
 - Use a progressive-disclosure rule: ask only what is needed for the current fulfilment choice. Delivery location is required only for delivery. Optional notes stay optional. Do not add account, payment, address or notification steps without a real product need.
 - On narrow screens, keep the primary action visible, use a single-column form, prevent horizontal overflow, ensure focus indicators and readable contrast, respect reduced-motion settings, and use accessible labels/status announcements. Never rely on colour alone for request status.
 - Keep public images and the local video as enhancements, not blockers. The site must remain usable if media fails or motion is reduced. Service-worker caching is not proof of offline playback; verify offline media on actual browsers separately.
+
+### Menu and order selection decision
+
+- Start with a deliberately small two-item menu (Fish & Chips, Fish & Rice), not a broad invented catalogue. Customers choose quantities before submitting; free text is reserved for optional exceptions, not the default ordering method.
+- Display each current price next to the item and calculate a visible menu estimate from those prices. Label the estimate provisional and state that the branch confirms the final price and availability. Do not add payment collection, delivery fees or inventory claims without real systems and approved business policy.
+- Menu CRUD lives in Operations. Staff can create, edit, show/hide and delete items. Public menu reads are read-only; Firestore rules restrict writes to the Strata admin role. The initial seed action must never overwrite an existing menu.
+- Price benchmark: Lion Park Resort's official Gaborone menu lists fried hake fillet and chips at P70: https://www.lionpark.co.bw/restuarant-menu/. Fish & Rice is seeded at the same P70 only as an editable placeholder, not as a verified Strata or direct competitor price. Business owner confirmation is required.
+- Familiar named choices and quantity selectors make an order more explicit than a blank text box; treat this as a design rationale, not a proven conversion result. Validate through actual customer use. Keep the menu shared across both cities until verified branch-specific data exists.
 
 ### Decision science and usability evidence
 
@@ -107,7 +115,7 @@ Use evidence to reduce friction, not to justify arbitrary simplification. The fo
 - Search active customer-facing source for wa.me, api.whatsapp.com, whatsapp, tel: and the former business contact number. No business-contact handoff may remain in homepage, order request, customer history, or public footers.
 - Confirm both branch CTAs carry the correct city into the order form, and a direct /order visit requires a city selection.
 - Confirm delivery reveals and requires the delivery location; pickup does not ask for a delivery address.
-- Confirm no product prices, availability, delivery fees or ETA are fabricated.
+- Confirm the starter menu is visible in the public storefront and order form; staff can add/edit/delete items, change prices, and hide/show items from Operations. Confirm starter prices are clearly marked provisional and the request estimate is not described as a final quote. Confirm menu writes are denied to non-admin users.\n- Confirm no unapproved product prices, availability, delivery fees or ETA are fabricated.
 - Confirm failed/offline submission retains form input and never displays a success reference.
 - Confirm a successful request can be found in My Requests in the same browser session, with status/message updates still working.
 - Confirm new requests omit the phone field; Firestore rules accept the field being absent while continuing to allow older records with a legacy phone field.

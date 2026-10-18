@@ -6,6 +6,7 @@ import { onAuthStateChanged, signInWithCustomToken, signOut, type User } from "f
 import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
 import { isAdminUser } from "@/lib/firebase/data";
 import { STRATA_ORDER_STATUSES, subscribeToAllStrataOrders, updateStrataOrder, type StrataOrderRequest, type StrataOrderStatus } from "@/lib/firebase/strata-orders";
+import { deleteStrataMenuItem, saveStrataMenuItem, seedStrataMenuIfEmpty, slugifyMenuItem, subscribeToStrataMenu, type StrataMenuItem } from "@/lib/firebase/strata-menu";
 
 export default function OperationsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -18,14 +19,24 @@ export default function OperationsPage() {
   const [loginBusy, setLoginBusy] = useState(false);
   const [accessWord, setAccessWord] = useState("");
   const [message, setMessage] = useState("");
+  const [menuItems, setMenuItems] = useState<StrataMenuItem[]>([]);
+  const [editingMenuId, setEditingMenuId] = useState("");
+  const [menuName, setMenuName] = useState("");
+  const [menuDescription, setMenuDescription] = useState("");
+  const [menuPrice, setMenuPrice] = useState("70");
+  const [menuActive, setMenuActive] = useState(true);
+  const [menuBusy, setMenuBusy] = useState(false);
 
   useEffect(() => {
     if (!hasFirebaseWebConfig) { setChecking(false); setMessage("Firebase web configuration is missing."); return; }
     let stopOrders = () => {};
+    let stopMenu = () => {};
     let disposed = false;
     const stopAuth = onAuthStateChanged(auth, async current => {
       stopOrders();
+      stopMenu();
       stopOrders = () => {};
+      stopMenu = () => {};
       if (!current) {
         if (!disposed) { setUser(null); setAuthorized(false); setChecking(false); }
         return;
@@ -43,8 +54,9 @@ export default function OperationsPage() {
       }
       setMessage("");
       stopOrders = subscribeToAllStrataOrders(setOrders, error => setMessage(error.message));
+      stopMenu = subscribeToStrataMenu(setMenuItems, error => setMessage(error.message));
     });
-    return () => { disposed = true; stopOrders(); stopAuth(); };
+    return () => { disposed = true; stopOrders(); stopMenu(); stopAuth(); };
   }, []);
 
   async function signIn(event: React.FormEvent<HTMLFormElement>) {
@@ -93,6 +105,76 @@ export default function OperationsPage() {
     } finally { setBusyId(""); }
   }
 
+  async function saveMenu(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const price = Number(menuPrice);
+    if (!menuName.trim() || !Number.isFinite(price) || price < 0 || price > 10000) {
+      setMessage("Enter a menu item name and a valid price between P0 and P10,000.");
+      return;
+    }
+    const id = editingMenuId || slugifyMenuItem(menuName);
+    setMenuBusy(true);
+    setMessage("");
+    try {
+      const existing = menuItems.find(item => item.id === id);
+      await saveStrataMenuItem({
+        id,
+        name: menuName.trim(),
+        description: menuDescription.trim(),
+        price,
+        active: menuActive,
+        sortOrder: existing?.sortOrder ?? menuItems.length + 1,
+        updatedAt: new Date().toISOString(),
+      });
+      setEditingMenuId("");
+      setMenuName("");
+      setMenuDescription("");
+      setMenuPrice("70");
+      setMenuActive(true);
+      setMessage("Menu item saved. The public menu and order form will update automatically.");
+    } catch {
+      setMessage("Could not save the menu item. Confirm the current session has a Strata owner/staff role and publish the latest Firestore rules.");
+    } finally {
+      setMenuBusy(false);
+    }
+  }
+
+  function editMenu(item: StrataMenuItem) {
+    setEditingMenuId(item.id);
+    setMenuName(item.name);
+    setMenuDescription(item.description);
+    setMenuPrice(String(item.price));
+    setMenuActive(item.active);
+    document.getElementById("strata-menu-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function seedMenu() {
+    setMenuBusy(true);
+    setMessage("");
+    try {
+      const result = await seedStrataMenuIfEmpty();
+      setMessage(result === "seeded" ? "Starter menu published. You can now change names, descriptions, prices and availability below." : "A menu already exists. No existing menu items were overwritten.");
+    } catch {
+      setMessage("Could not publish the starter menu. Confirm the Strata Operations role and latest Firestore rules.");
+    } finally {
+      setMenuBusy(false);
+    }
+  }
+
+  async function removeMenuItem(item: StrataMenuItem) {
+    setMenuBusy(true);
+    setMessage("");
+    try {
+      await deleteStrataMenuItem(item.id);
+      if (editingMenuId === item.id) { setEditingMenuId(""); setMenuName(""); setMenuDescription(""); setMenuPrice("70"); setMenuActive(true); }
+      setMessage(item.name + " removed from the menu.");
+    } catch {
+      setMessage("Could not remove this item. Confirm the current session has a Strata owner/staff role and the latest Firestore rules are published.");
+    } finally {
+      setMenuBusy(false);
+    }
+  }
+
   return <main className="strataSite strataOperationsPage">
     <header className="strataHeader">
       <Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
@@ -122,6 +204,24 @@ export default function OperationsPage() {
             <button className="strataButton strataButtonRed" type="button" disabled={busyId === order.id} onClick={() => void save(order)}>{busyId === order.id ? "SAVING…" : "SAVE UPDATE ↗"}</button>
           </div>
         </article>)}
+      </section>}
+      {authorized && <section className="strataMenuAdmin">
+        <div className="strataMenuAdminHead"><div><p className="strataEyebrow">STRATA · MENU MANAGEMENT</p><h2>THE <em>MENU.</em></h2><p>Edit the meals and prices customers see. Changes update the public menu and ordering form automatically.</p></div>
+          {!menuItems.length && <button className="strataButton strataButtonRed" type="button" disabled={menuBusy} onClick={() => void seedMenu()}>{menuBusy ? "PUBLISHING…" : "PUBLISH STARTER MENU"}</button>}
+        </div>
+        {!menuItems.length && <p className="strataMenuAdminEmpty">The starter menu has not been published to the database yet. Publish it once to make the items fully editable.</p>}
+        {menuItems.map(item => <article className="strataMenuAdminItem" key={item.id}>
+          <div><span className={item.active ? "strataMenuStatus isActive" : "strataMenuStatus"}>{item.active ? "VISIBLE TO CUSTOMERS" : "HIDDEN FROM CUSTOMERS"}</span><h3>{item.name}</h3><p>{item.description || "No description added."}</p></div>
+          <strong>P{item.price.toFixed(2)}</strong>
+          <div className="strataMenuAdminActions"><button type="button" onClick={() => editMenu(item)}>EDIT</button><button type="button" disabled={menuBusy} onClick={() => void saveStrataMenuItem({ ...item, active: !item.active, updatedAt: new Date().toISOString() }).then(() => setMessage(item.name + (item.active ? " hidden from" : " shown on") + " the public menu.")).catch(() => setMessage("Could not update menu visibility. Check Firestore rules."))}>{item.active ? "HIDE" : "SHOW"}</button><button type="button" disabled={menuBusy} onClick={() => void removeMenuItem(item)}>DELETE</button></div>
+        </article>)}
+        <form id="strata-menu-editor" className="strataMenuEditor" onSubmit={event => void saveMenu(event)}>
+          <p className="strataEyebrow">{editingMenuId ? "EDIT MENU ITEM" : "ADD A MENU ITEM"}</p>
+          <label>Meal name<input required maxLength={80} value={menuName} onChange={event => setMenuName(event.target.value)} placeholder="e.g. Fish & Chips" /></label>
+          <label>Description (optional)<input maxLength={240} value={menuDescription} onChange={event => setMenuDescription(event.target.value)} placeholder="What comes with the meal?" /></label>
+          <div className="strataMenuEditorRow"><label>Price (BWP)<input required type="number" min="0" max="10000" step="0.5" value={menuPrice} onChange={event => setMenuPrice(event.target.value)} /></label><label className="strataMenuActiveToggle"><input type="checkbox" checked={menuActive} onChange={event => setMenuActive(event.target.checked)} /> Show on public menu</label></div>
+          <div className="strataMenuEditorActions"><button className="strataButton strataButtonRed" type="submit" disabled={menuBusy}>{menuBusy ? "SAVING…" : editingMenuId ? "SAVE CHANGES" : "ADD MENU ITEM"}</button>{editingMenuId && <button className="strataButton strataButtonOutline" type="button" onClick={() => { setEditingMenuId(""); setMenuName(""); setMenuDescription(""); setMenuPrice("70"); setMenuActive(true); }}>CANCEL EDIT</button>}</div>
+        </form>
       </section>}
       {message && <p className="strataConnectionNotice" role="status">{message}</p>}
       <p className="strataOperationsFootnote">Only a server-issued Strata Operations session with a matching <code>admins/{'{uid}'}</code> role document can access this queue. Customer records and the operations queue are not cached for offline access.</p>

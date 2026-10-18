@@ -23,6 +23,28 @@ service cloud.firestore {
       allow list, create, update, delete: if false;
     }
 
+    match /strataMenu/{menuItemId} {
+      function validMenuItem() {
+        return request.resource.data.keys().hasOnly(['name', 'description', 'price', 'active', 'sortOrder', 'updatedAt'])
+          && request.resource.data.keys().hasAll(['name', 'description', 'price', 'active', 'sortOrder', 'updatedAt'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 80
+          && request.resource.data.description is string
+          && request.resource.data.description.size() <= 240
+          && request.resource.data.price is number
+          && request.resource.data.price >= 0
+          && request.resource.data.price <= 10000
+          && request.resource.data.active is bool
+          && request.resource.data.sortOrder is int
+          && request.resource.data.updatedAt is string;
+      }
+      // Menu data is public storefront content; only authenticated Strata staff can mutate it.
+      allow read: if true;
+      allow create, update: if isAdmin() && validMenuItem();
+      allow delete: if isAdmin();
+    }
+
     match /orderRequests/{requestId} {
       function validNewOrderRequest() {
         return request.resource.data.keys().hasOnly([

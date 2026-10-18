@@ -5,6 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { browserLocalPersistence, setPersistence, signInAnonymously } from "firebase/auth";
 import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
 import { createStrataOrderRequest } from "@/lib/firebase/strata-orders";
+import { STARTER_STRATA_MENU, subscribeToStrataMenu, type StrataMenuItem } from "@/lib/firebase/strata-menu";
 
 type StrataCity = "Gaborone" | "Francistown";
 type Fulfilment = "Delivery" | "Pickup" | "Need help deciding";
@@ -25,6 +26,10 @@ export default function OrderPage() {
   const [city, setCity] = useState<StrataCity | "">("");
   const [fulfilment, setFulfilment] = useState<Fulfilment | "">("");
   const [items, setItems] = useState("");
+  const [submittedItems, setSubmittedItems] = useState("");
+  const [menuItems, setMenuItems] = useState<StrataMenuItem[]>(STARTER_STRATA_MENU);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [menuMessage, setMenuMessage] = useState("");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
@@ -33,7 +38,13 @@ export default function OrderPage() {
   const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
+    const stopMenu = subscribeToStrataMenu(
+      current => { setMenuItems((current.length ? current : STARTER_STRATA_MENU).filter(item => item.active)); setMenuMessage(""); },
+      () => { setMenuItems(STARTER_STRATA_MENU.filter(item => item.active)); setMenuMessage("Showing the starter menu while the live menu reconnects."); },
+    );
     const requestedCity = new URLSearchParams(window.location.search).get("city");
+    const requestedItem = new URLSearchParams(window.location.search).get("item");
+    if (requestedItem) setQuantities({ [requestedItem]: 1 });
     if (requestedCity === "Gaborone" || requestedCity === "Francistown") setCity(requestedCity);
     setOffline(!navigator.onLine);
     const online = () => setOffline(false);
@@ -41,6 +52,7 @@ export default function OrderPage() {
     window.addEventListener("online", online);
     window.addEventListener("offline", offlineNow);
     return () => {
+      stopMenu();
       window.removeEventListener("online", online);
       window.removeEventListener("offline", offlineNow);
     };
@@ -55,6 +67,16 @@ export default function OrderPage() {
     }
     if (fulfilment !== "Delivery" && fulfilment !== "Pickup" && fulfilment !== "Need help deciding") {
       setMessage("Choose delivery, pickup, or help deciding before sending your request.");
+      return;
+    }
+    const chosenMenuItems = menuItems.filter(item => (quantities[item.id] ?? 0) > 0);
+    const menuLines = chosenMenuItems.map(item => `${item.name} × ${quantities[item.id]} — P${item.price.toFixed(2)} each`);
+    const menuEstimate = chosenMenuItems.reduce((total, item) => total + item.price * (quantities[item.id] ?? 0), 0);
+    if (chosenMenuItems.length && menuEstimate > 0) menuLines.push(`Listed menu estimate: P${menuEstimate.toFixed(2)} (branch to confirm)`);
+    if (items.trim()) menuLines.push(`Additional request: ${items.trim()}`);
+    const requestItemsText = menuLines.join("\n");
+    if (!requestItemsText.trim()) {
+      setMessage("Choose at least one menu item and quantity, or describe a special request.");
       return;
     }
     if (!navigator.onLine) {
@@ -76,7 +98,7 @@ export default function OrderPage() {
         customerName: name.trim(),
         city,
         fulfilment,
-        itemsText: items.trim(),
+        itemsText: requestItemsText,
         deliveryLocation: fulfilment === "Delivery" ? address.trim() : "",
         notes: notes.trim(),
         status: "New",
@@ -84,6 +106,7 @@ export default function OrderPage() {
         createdAt: now,
         updatedAt: now
       });
+      setSubmittedItems(requestItemsText);
       setOrderId(id);
       setMessage("Your request has been saved. The selected branch still needs to confirm availability, final price, any delivery charge and timing. Nothing has been charged.");
     } catch (error) {
@@ -114,20 +137,32 @@ export default function OrderPage() {
         <div className="strataOrderSummary" aria-label="Saved request summary">
           <p><strong>Branch</strong><span>{city}</span></p>
           <p><strong>Fulfilment</strong><span>{fulfilment}</span></p>
-          <p><strong>Requested items</strong><span>{items}</span></p>
+          <p><strong>Requested items</strong><span>{submittedItems}</span></p>
           {fulfilment === "Delivery" && address.trim() && <p><strong>Delivery location</strong><span>{address}</span></p>}
         </div>
         <p>{message}</p>
         <Link className="strataButton strataButtonRed" href="/account?submitted=1">VIEW REQUEST STATUS <span>→</span></Link>
         <p className="strataFormFootnote">Your request updates stay in My Requests. Account linking is optional and will be offered there after you can see your saved request.</p>
-        <button type="button" className="strataTextButton" onClick={() => { setOrderId(""); setItems(""); setNotes(""); setAddress(""); setMessage(""); }}>Start another request</button>
+        <button type="button" className="strataTextButton" onClick={() => { setOrderId(""); setSubmittedItems(""); setItems(""); setNotes(""); setAddress(""); setQuantities({}); setMessage(""); }}>Start another request</button>
       </section> : <form className="strataOrderForm" onSubmit={submit}>
         <label>Your name<input required maxLength={80} autoComplete="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name for the order" /></label>
         <div className="strataFormRow">
           <label>Which branch?<select required value={city} onChange={e => setCity(e.target.value as StrataCity | "")}><option value="" disabled>Choose a city</option><option value="Gaborone">Gaborone</option><option value="Francistown">Francistown</option></select></label>
           <label>How would you like your order?<select required value={fulfilment} onChange={e => setFulfilment(e.target.value as Fulfilment | "")}><option value="" disabled>Choose fulfilment</option><option value="Delivery">Delivery</option><option value="Pickup">Pickup</option><option value="Need help deciding">Help me decide</option></select></label>
         </div>
-        <label>What would you like?<textarea required minLength={3} maxLength={1200} rows={4} value={items} onChange={e => setItems(e.target.value)} placeholder="List the items and quantities you would like to order." /></label>
+        <fieldset className="strataMenuPicker">
+          <legend>Choose your food</legend>
+          <p>Select meals and quantities. The estimate uses the current menu prices; the branch confirms the final amount.</p>
+          {menuItems.length ? menuItems.map(item => <div className="strataMenuPickRow" key={item.id}>
+            <div><strong>{item.name}</strong><small>{item.description}</small><b>P{item.price.toFixed(2)}</b></div>
+            <label>Qty<select aria-label={`Quantity of ${item.name}`} value={quantities[item.id] ?? 0} onChange={event => setQuantities(previous => ({ ...previous, [item.id]: Number(event.target.value) }))}>
+              {Array.from({ length: 11 }, (_, index) => <option key={index} value={index}>{index}</option>)}
+            </select></label>
+          </div>) : <p>The menu is temporarily unavailable. You can still describe your request below.</p>}
+          {menuItems.some(item => (quantities[item.id] ?? 0) > 0) && <div className="strataMenuEstimate"><span>Menu estimate</span><strong>P{menuItems.reduce((sum, item) => sum + item.price * (quantities[item.id] ?? 0), 0).toFixed(2)}</strong></div>}
+          {menuMessage && <small role="status">{menuMessage}</small>}
+        </fieldset>
+        <label>Anything else you’d like? (optional)<textarea maxLength={600} rows={3} value={items} onChange={e => setItems(e.target.value)} placeholder="Extra details or a special request." /></label>
         {fulfilment === "Delivery" && <label>Delivery location / area<input required maxLength={240} autoComplete="street-address" value={address} onChange={e => setAddress(e.target.value)} placeholder="Area, plot or useful landmark" /></label>}
         <label>Anything else? (optional)<textarea maxLength={600} rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timing, directions or other order details" /></label>
         <button className="strataButton strataButtonRed strataSubmitOrder" type="submit" disabled={busy || offline || !hasFirebaseWebConfig}>{busy ? "SAVING REQUEST…" : offline ? "CONNECT TO SEND REQUEST" : "SUBMIT ORDER REQUEST"} <span>↗</span></button>

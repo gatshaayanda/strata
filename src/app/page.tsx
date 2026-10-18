@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MenuShowcase from "./menu-showcase";
 
 const cities = [
   {
@@ -55,6 +56,8 @@ export default function Home() {
         </div>
         <div className="strataHeroVertical">MADE FOR THE CRAVING · MADE IN BOTSWANA</div>
       </section>
+
+      <MenuShowcase />
 
       <section className="strataMarquee" aria-label="Strata slogan">
         <div>FISH &amp; CHIPS <b>✳</b> COME GET HOOKED <b>✳</b> GOOD FOOD, NO FUSS <b>✳</b> FISH &amp; CHIPS <b>✳</b></div>
