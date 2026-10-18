@@ -33,6 +33,11 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [showPostSubmitSetup, setShowPostSubmitSetup] = useState(false);
+
+  useEffect(() => {
+    setShowPostSubmitSetup(new URLSearchParams(window.location.search).get("submitted") === "1");
+  }, []);
 
   useEffect(() => {
     if (!hasFirebaseWebConfig) {
@@ -88,11 +93,20 @@ export default function AccountPage() {
         <h1>GOOD TO<br/><em>SEE YOU.</em></h1>
         <p>Track requests sent from this browser. You can browse and order as a guest; connecting Google is optional and helps you return to this account.</p>
         <div className="strataOrderNotice"><strong>ORDER STATUS</strong><span>A status update is not a payment receipt or delivery guarantee. Strata must confirm price, availability and fulfilment details directly with you.</span></div>
-        <button className="strataButton strataButtonOutline strataGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy || !user || !hasFirebaseWebConfig}>{busy ? "CONNECTING…" : user?.isAnonymous ? "CONNECT GOOGLE ACCOUNT ↗" : user ? (user.providerData.some(item => item.providerId === "google.com") ? "GOOGLE ACCOUNT CONNECTED" : "CONNECT GOOGLE ACCOUNT ↗") : "GOOGLE SIGN-IN UNAVAILABLE"}</button>
+        <button id="strataGoogleButton" className="strataButton strataButtonOutline strataGoogleButton" type="button" onClick={() => void connectGoogle()} disabled={busy || !user || !hasFirebaseWebConfig}>{busy ? "CONNECTING…" : user?.isAnonymous ? "CONNECT GOOGLE ACCOUNT ↗" : user ? (user.providerData.some(item => item.providerId === "google.com") ? "GOOGLE ACCOUNT CONNECTED" : "CONNECT GOOGLE ACCOUNT ↗") : "GOOGLE SIGN-IN UNAVAILABLE"}</button>
         {user && <p className="strataAccountIdentity">{user.isAnonymous ? "Guest session active on this browser." : "Connected account: " + (user.email || user.displayName || "Google account")}</p>}
         {message && <p className="strataConnectionNotice" role="status">{message}</p>}
       </div>
-      <section className="strataAccountOrders" aria-live="polite">
+      {showPostSubmitSetup && <section className="strataPostSubmitSetup" aria-labelledby="strataPostSubmitTitle">
+        <p className="strataEyebrow">YOUR REQUEST IS SAVED</p>
+        <h2 id="strataPostSubmitTitle">Keep your order journey simple.</h2>
+        <p>Your request stays attached to this browser session. Check the status below. If you want easier access when changing devices, you can optionally connect Google; this does not confirm your order or charge you.</p>
+        <div className="strataPostSubmitActions">
+          <a className="strataButton strataButtonRed" href="#request-history">VIEW REQUEST STATUS ↓</a>
+          <a className="strataButton strataButtonOutline" href="#strataGoogleButton">SECURE HISTORY (OPTIONAL) ↗</a>
+        </div>
+      </section>}
+      <section className="strataAccountOrders" id="request-history" aria-live="polite">
         <div className="strataSectionHead"><div><p className="strataEyebrow">REQUEST HISTORY</p><h2>YOUR<br/><em>ORDERS.</em></h2></div><span className="strataOrderCount">{orders.length} {orders.length === 1 ? "REQUEST" : "REQUESTS"}</span></div>
         {loading ? <p className="strataAccountEmpty">Loading your requests…</p> : !orders.length ? <div className="strataAccountEmpty"><strong>Nothing here yet.</strong><p>When you send a request through this browser, it will appear here.</p><Link className="strataButton strataButtonRed" href="/order">START AN ORDER ↗</Link></div> : <div className="strataAccountOrderList">
           {orders.map(order => <article className="strataAccountOrder" key={order.id}>
@@ -102,11 +116,10 @@ export default function AccountPage() {
             <p className="strataAccountStatus">{statusCopy[order.status] || "Strata will update this request as it progresses."}</p>
             {order.staffNote && <p className="strataAccountStaffNote"><strong>Message from Strata</strong><br/>{order.staffNote}</p>}
             <small>Reference: {order.id}</small>
-            <a href={"https://wa.me/26777762614?text=" + encodeURIComponent("Dumela Strata Sa’o Bitsa. I’m following up on request " + order.id + ".")} target="_blank" rel="noreferrer">FOLLOW UP ON WHATSAPP ↗</a>
           </article>)}
         </div>}
       </section>
     </section>
-    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><a href="tel:+26777762614">77 762 614</a><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
+    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/order">START AN ORDER ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
   </main>;
 }
