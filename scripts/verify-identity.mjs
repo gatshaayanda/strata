@@ -55,6 +55,39 @@ if (fs.existsSync(swPath)) {
   if (!sw.includes("/apple-touch-icon.png")) failures.push("service worker: Apple touch icon missing from app shell");
   if (/theplug-shell-|plug-icon\.svg|firebase-messaging-compat/.test(sw)) failures.push("service worker: inherited cache, icon, or messaging dependency remains");
 }
+
+const publicJourneyFiles = [
+  "src/app/page.tsx",
+  "src/app/order/page.tsx",
+  "src/app/account/page.tsx"
+];
+const forbiddenPublicContact = [
+  /wa\.me/i,
+  /api\.whatsapp\.com/i,
+  /whatsapp/i,
+  /tel:/i,
+  /77762614/
+];
+for (const rel of publicJourneyFiles) {
+  const file = path.join(root, rel);
+  if (!fs.existsSync(file)) continue;
+  const content = fs.readFileSync(file, "utf8");
+  for (const pattern of forbiddenPublicContact) {
+    if (pattern.test(content)) failures.push(rel + ": public ordering must not hand off to messaging or publish a business contact number (" + pattern + ")");
+  }
+}
+const homePath = path.join(root, "src/app/page.tsx");
+const orderPath = path.join(root, "src/app/order/page.tsx");
+if (fs.existsSync(homePath)) {
+  const home = fs.readFileSync(homePath, "utf8");
+  if (!home.includes("/order?city=Gaborone")) failures.push("storefront: missing Gaborone branch-to-order path");
+  if (!home.includes("/order?city=Francistown")) failures.push("storefront: missing Francistown branch-to-order path");
+}
+if (fs.existsSync(orderPath)) {
+  const order = fs.readFileSync(orderPath, "utf8");
+  if (!order.includes("Choose a city")) failures.push("order form: direct entry must require explicit branch selection");
+}
+
 if (failures.length) {
   console.error("STRATA IDENTITY VERIFICATION FAILED");
   for (const failure of failures) console.error(" - " + failure);
