@@ -14,13 +14,13 @@
   "theme_color": "#101010",
   "icons": [
     {
-      "src": "/strata-icon.svg",
+      "src": "/strata-logo-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/strata-icon.svg",
+      "src": "/strata-logo-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
@@ -42,7 +42,7 @@
       "url": "/order",
       "icons": [
         {
-          "src": "/strata-icon.svg",
+          "src": "/strata-logo-icon.svg",
           "sizes": "any",
           "type": "image/svg+xml"
         }
@@ -55,7 +55,7 @@
       "url": "/#locations",
       "icons": [
         {
-          "src": "/strata-icon.svg",
+          "src": "/strata-logo-icon.svg",
           "sizes": "any",
           "type": "image/svg+xml"
         }
