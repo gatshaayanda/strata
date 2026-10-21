@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   keywords: ["Strata Sa’o Bitsa", "fish and chips", "food", "Botswana", "Gaborone", "Francistown"],
   openGraph: { type: "website", siteName: "Strata Sa’o Bitsa", title: "Strata Sa’o Bitsa | Come Get Hooked", description: "Fish, chips and good times. Come get hooked." },
   twitter: { card: "summary", title: "Strata Sa’o Bitsa | Come Get Hooked", description: "Fish, chips and good times. Come get hooked." },
-  icons: { icon: "/strata-logo-icon.svg", apple: "/apple-touch-icon.png" },
+  icons: { icon: "/strata-logo-icon.svg", apple: "/stratalogo.jpeg" },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Strata", statusBarStyle: "black-translucent" },
 };
