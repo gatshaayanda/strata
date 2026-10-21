@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="104" fill="#101010"/>
+  <path d="M82 266c50-72 115-108 191-108 70 0 128 36 169 108-41 72-99 108-169 108-76 0-141-36-191-108Z" fill="#fff"/>
+  <path d="M82 266 28 202v128l54-64Z" fill="#e3262e"/>
+  <circle cx="349" cy="242" r="17" fill="#101010"/>
+  <path d="M157 274c28 27 63 41 105 41 43 0 78-14 106-41" fill="none" stroke="#e3262e" stroke-width="14" stroke-linecap="round"/>
+  <path d="M251 96c-16 22-24 42-24 60 0 22 13 37 29 37s29-15 29-37c0-18-8-38-24-60l-5-7-5 7Z" fill="#e3262e"/>
+  <text x="256" y="438" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="44" font-weight="900" text-anchor="middle" letter-spacing="5">STRATA</text>
+</svg>

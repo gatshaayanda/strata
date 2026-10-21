@@ -833,3 +833,345 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .plugDisclaimerActions span{color:#333;font-size:.8rem;font-weight:650}
 .plugStudioPanel>form>p{color:#333;font-size:.82rem;line-height:1.55}
 @media(max-width:680px){.plugDisclaimerActions{align-items:stretch;flex-direction:column}.plugDisclaimerActions button{width:100%;min-height:44px}.plugDisclaimerActions span{text-align:left}}
+
+
+/* Strata Sa'o Bitsa — customer storefront */
+.strataSite{--s-red:#e3262e;--s-ink:#101010;--s-paper:#f5f1e9;--s-muted:#c7c1b8;background:var(--s-ink);color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+.strataSite a{color:inherit;text-decoration:none}
+.strataSite img{display:block;max-width:100%}
+.strataTicker{display:flex;justify-content:space-between;gap:16px;padding:10px 5vw;background:var(--s-red);color:#fff;font-size:.66rem;font-weight:900;letter-spacing:.14em}
+.strataHeader{min-height:86px;padding:16px 5vw;display:flex;align-items:center;justify-content:space-between;gap:22px;border-bottom:1px solid #343434;background:#101010}
+.strataBrand{display:flex;align-items:center;gap:11px;flex-shrink:0}.strataBrand img{width:48px;height:48px}.strataBrand span{display:grid;gap:2px}.strataBrand strong{font-family:Impact,"Arial Black",sans-serif;font-size:1.55rem;letter-spacing:.06em;line-height:.9}.strataBrand small{font-size:.59rem;letter-spacing:.24em;font-weight:800}
+.strataHeader nav{display:flex;gap:28px;font-size:.72rem;letter-spacing:.13em;font-weight:900}.strataHeader nav a:hover,.strataFooter>a:hover{color:#ff686d}
+.strataHeaderCta{padding:14px 17px;background:#fff;color:#101010!important;font-size:.68rem;font-weight:950;letter-spacing:.08em}.strataHeaderCta span{color:var(--s-red);margin-left:10px}
+.strataHero{position:relative;display:grid;grid-template-columns:1fr .9fr;align-items:center;gap:4vw;padding:clamp(48px,7vw,100px) 8vw clamp(58px,8vw,108px);background:radial-gradient(ellipse at 80% 42%,#292020 0,transparent 47%),#101010}
+.strataHeroCopy{position:relative;z-index:2;max-width:690px}.strataEyebrow{margin:0 0 17px;font-size:.68rem;font-weight:900;letter-spacing:.16em;color:#ff777b}.strataEyebrow>span,.strataLiveDot{display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:#ff434a}
+.strataHero h1,.strataSectionHead h2,.strataLocations h2,.strataFilm h2{margin:0;font-family:Impact,"Arial Black",sans-serif;font-size:clamp(4.2rem,10vw,9.6rem);font-weight:900;line-height:.79;letter-spacing:-.025em}.strataHero h1 em,.strataSectionHead h2 em,.strataLocations h2 em,.strataFilm h2 em{font-style:normal;color:var(--s-red)}
+.strataLead{max-width:470px;color:#d1cbc4;font-size:1.02rem;line-height:1.7;margin:27px 0 0}.strataHeroActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.strataButton{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:15px 19px;font-size:.7rem;font-weight:950;letter-spacing:.09em}.strataButtonRed{background:var(--s-red);color:#fff!important}.strataButtonRed:hover{background:#ff4148}.strataButtonRed span{margin-left:20px}.strataButtonOutline{border:1px solid #68615d;color:#fff!important}.strataButtonOutline:hover{border-color:#fff}
+.strataHeroFoot{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:34px;font-size:.64rem;letter-spacing:.08em;font-weight:800;color:#b9b1a9}.strataHeroFoot a{color:#fff;text-decoration:underline;text-underline-offset:3px}.strataFootDivider{color:#68615d}.strataHeroVisual{position:relative;min-height:450px;transform:rotate(2deg);border:1px solid #5b5550;background:#292323}.strataHeroVisual>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.92)}.strataHeroVisual:after{content:"";position:absolute;inset:12px;border:1px solid rgba(255,255,255,.45);pointer-events:none}.strataImageStamp{position:absolute;z-index:2;left:-28px;bottom:28px;padding:17px 20px;background:var(--s-red);transform:rotate(-4deg);color:#fff}.strataImageStamp span,.strataImageStamp small{display:block;font-size:.58rem;font-weight:900;letter-spacing:.18em}.strataImageStamp strong{display:block;font-family:Impact,"Arial Black",sans-serif;font-size:2rem;line-height:.92;margin:9px 0}.strataImageCorner{position:absolute;z-index:2;right:19px;top:22px;font-size:.58rem;letter-spacing:.12em;text-shadow:0 1px 5px #000}.strataHeroVertical{position:absolute;right:2vw;bottom:25%;writing-mode:vertical-rl;font-size:.55rem;letter-spacing:.2em;color:#928a82}
+.strataMarquee{overflow:hidden;background:var(--s-paper);color:#101010;padding:17px 0;white-space:nowrap}.strataMarquee>div{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(1.1rem,2vw,1.7rem);letter-spacing:.06em;word-spacing:.12em;text-align:center}.strataMarquee b{color:var(--s-red);padding:0 20px}
+.sectionAnchor{scroll-margin-top:20px}.strataFood{padding:clamp(58px,8vw,105px) 8vw;background:var(--s-paper);color:#101010}.strataSectionHead{display:flex;align-items:end;justify-content:space-between;gap:35px;margin-bottom:34px}.strataSectionHead h2,.strataLocations h2{font-size:clamp(3.2rem,6.5vw,6.4rem)}.strataSectionHead>p{max-width:350px;color:#57514c;line-height:1.7;font-size:.95rem}.strataSectionHead .strataEyebrow{color:#a91920}
+.strataPhotoGrid{display:grid;grid-template-columns:1.2fr 1fr 1fr;grid-template-rows:260px 260px;gap:12px}.strataPhotoCard{position:relative;min-height:220px;overflow:hidden;background:#262222;color:#fff}.strataPhotoLarge{grid-row:span 2}.strataPhotoCard img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;transition:transform .45s ease}.strataPhotoCard:hover img{transform:scale(1.04)}.strataPhotoCard:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82),transparent 66%)}.strataPhotoCard>div{position:absolute;z-index:1;left:19px;right:15px;bottom:19px}.strataPhotoCard span{font-size:.58rem;font-weight:900;letter-spacing:.12em}.strataPhotoCard h3{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(1.35rem,2.2vw,2rem);margin:8px 0 0;line-height:.95}
+.strataMenuPrompt{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:26px;padding:27px;background:#fff;border:1px solid #ded7cc}.strataMenuPrompt .strataEyebrow{color:#a91920}.strataMenuPrompt h3{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(1.6rem,3vw,2.5rem);margin:8px 0}.strataMenuPrompt p{max-width:560px;margin:0;color:#5d5750;font-size:.85rem;line-height:1.6}
+.strataFilm{position:relative;min-height:510px;background:#1a1717;overflow:hidden}.strataFilm video{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;opacity:.52}.strataFilm:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.88),rgba(10,10,10,.12))}.strataFilmOverlay{position:relative;z-index:1;padding:85px 8vw}.strataFilm h2{font-size:clamp(4rem,9vw,8.5rem)}.strataFilmOverlay>a{display:inline-block;margin-top:28px;padding-bottom:8px;border-bottom:2px solid var(--s-red);font-size:.72rem;font-weight:900;letter-spacing:.12em}.strataFilmCaption{position:absolute;z-index:1;right:5vw;bottom:22px;font-size:.6rem;letter-spacing:.16em}
+.strataLocations{display:grid;grid-template-columns:1fr 1fr;gap:7vw;padding:clamp(60px,9vw,115px) 8vw;background:#171515}.strataLocations h2{margin:0 0 24px}.strataLocations>div:first-child .strataEyebrow{color:#ff777b}.strataLocations>div:first-child>p:last-child{max-width:430px;color:#c7c0b9;line-height:1.75}.strataCityList>a{display:grid;grid-template-columns:35px 1fr 25px;gap:6px 12px;align-items:center;padding:22px 0;border-bottom:1px solid #47413c}.strataCityList>a>span{grid-row:span 2;color:#ff777b;font-size:.7rem}.strataCityList>a strong{font-family:Impact,"Arial Black",sans-serif;font-size:1.65rem;letter-spacing:.04em}.strataCityList>a small{grid-column:2;font-size:.58rem;letter-spacing:.12em;color:#bdb5ad}.strataCityList>a>b{grid-column:3;grid-row:1/3;font-size:1.3rem}.strataCityList>a:hover strong,.strataCityList>a:hover b{color:#ff777b}.strataCallout{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:27px;padding:23px;background:#252020;border-left:3px solid var(--s-red)}.strataCallout span,.strataCallout small{font-size:.6rem;font-weight:900;letter-spacing:.14em;color:#c6beb7}.strataCallout>a{font-family:Impact,"Arial Black",sans-serif;font-size:2rem}
+.strataFooter{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 5vw 24px;background:#0a0a0a;border-top:1px solid #333}.strataFooter .strataBrand img{width:42px;height:42px}.strataFooter>span,.strataFooter>a,.strataFooter>small{font-size:.6rem;font-weight:900;letter-spacing:.09em}.strataFooter>small{width:100%;color:#a7a09a;font-weight:500}.strataFooter>a{color:#ff777b}
+@media(max-width:900px){.strataHero{grid-template-columns:1fr .8fr;padding-left:6vw;padding-right:6vw}.strataHeroVisual{min-height:370px}.strataHeroVertical{display:none}.strataFood,.strataLocations{padding-left:6vw;padding-right:6vw}.strataPhotoGrid{grid-template-columns:1fr 1fr;grid-template-rows:300px 220px 220px}.strataPhotoLarge{grid-column:span 2;grid-row:auto}.strataPhotoCard{min-height:220px}.strataPhotoLarge{min-height:300px}}
+@media(max-width:620px){.strataTicker{padding:9px 15px;font-size:.52rem;letter-spacing:.07em}.strataTicker span:nth-child(2){display:none}.strataHeader{min-height:70px;padding:12px 16px;gap:10px}.strataBrand img{width:40px;height:40px}.strataBrand strong{font-size:1.25rem}.strataBrand small{font-size:.5rem}.strataHeader nav{display:none}.strataHeaderCta{padding:13px 11px;font-size:.59rem}.strataHero{display:flex;flex-direction:column;align-items:stretch;gap:35px;padding:54px 22px 64px}.strataHero h1{font-size:clamp(4.3rem,19vw,7rem)}.strataLead{font-size:.95rem;margin-top:23px}.strataHeroVisual{min-height:350px;margin-left:17px;margin-right:8px}.strataImageStamp{left:-16px;bottom:18px}.strataHeroFoot{font-size:.57rem;line-height:1.7}.strataMarquee{padding:14px 0}.strataMarquee>div{text-align:left;padding-left:15px;font-size:1.1rem}.strataFood{padding:58px 17px}.strataSectionHead{display:block}.strataSectionHead h2,.strataLocations h2{font-size:clamp(3.1rem,15vw,5rem)}.strataSectionHead>p{margin-top:20px}.strataPhotoGrid{grid-template-columns:1fr 1fr;grid-template-rows:280px 190px 190px;gap:8px}.strataPhotoLarge{grid-column:span 2;min-height:280px}.strataPhotoCard{min-height:190px}.strataPhotoCard>div{left:11px;bottom:12px}.strataPhotoCard span{font-size:.48rem}.strataPhotoCard h3{font-size:1.25rem}.strataMenuPrompt{display:block;padding:20px;margin-top:17px}.strataMenuPrompt .strataButton{margin-top:20px;width:100%}.strataFilm{min-height:440px}.strataFilmOverlay{padding:70px 23px}.strataFilm h2{font-size:clamp(4rem,18vw,6.4rem)}.strataLocations{grid-template-columns:1fr;gap:25px;padding:60px 22px}.strataCityList>a strong{font-size:1.45rem}.strataFooter{padding:24px 17px;gap:16px}.strataFooter>span{display:none}.strataFooter>a{margin-left:auto}.strataFooter>small{line-height:1.5}}
+@media(prefers-reduced-motion:reduce){.strataSite *{scroll-behavior:auto!important;transition:none!important}.strataFilm video{display:none}}
+
+.strataOrderPage{min-height:100vh}.strataOrderLayout{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(28px,6vw,85px);max-width:1280px;margin:0 auto;padding:clamp(40px,7vw,90px) 6vw}.strataOrderIntro h1{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(4rem,8vw,7rem);line-height:.8;margin:0}.strataOrderIntro h1 em{font-style:normal;color:#e3262e}.strataOrderIntro>p:not(.strataEyebrow){max-width:440px;color:#d1cbc4;line-height:1.75}.strataOrderIntro>img{width:100%;height:260px;object-fit:cover;margin-top:28px;border:1px solid #49413d}.strataOrderNotice{display:grid;gap:8px;max-width:440px;padding:17px;border-left:3px solid #e3262e;background:#211c1c;margin-top:25px}.strataOrderNotice strong{font-size:.65rem;letter-spacing:.13em}.strataOrderNotice span{font-size:.82rem;line-height:1.65;color:#d1cbc4}.strataOrderForm{display:grid;gap:17px;padding:clamp(20px,3vw,35px);background:#f5f1e9;color:#101010;align-self:start}.strataOrderForm label{display:grid;gap:8px;font-size:.73rem;font-weight:900;letter-spacing:.025em}.strataOrderForm input,.strataOrderForm select,.strataOrderForm textarea{width:100%;min-height:48px;border:1px solid #bdb5ab;border-radius:0;padding:12px;background:#fff;color:#101010;font-size:.9rem;font-weight:500;letter-spacing:0;outline-offset:2px}.strataOrderForm textarea{resize:vertical;line-height:1.5}.strataOrderForm input:focus,.strataOrderForm select:focus,.strataOrderForm textarea:focus{outline:2px solid #e3262e;border-color:#e3262e}.strataFormRow{display:grid;grid-template-columns:1fr 1fr;gap:13px}.strataSubmitOrder{border:0;width:100%;cursor:pointer;font:inherit;font-weight:950}.strataFormFootnote{margin:0;color:#514a44;font-size:.72rem;line-height:1.6}.strataOrderPage .strataFooter{margin-top:0}
+@media(max-width:760px){.strataOrderLayout{grid-template-columns:1fr;padding:38px 18px 55px;gap:30px}.strataOrderIntro h1{font-size:clamp(4rem,17vw,6rem)}.strataOrderIntro>img{height:220px;margin-top:20px}.strataOrderForm{padding:20px 16px}.strataFormRow{grid-template-columns:1fr}.strataOrderPage .strataHeader{padding:12px 16px}}
+
+
+/* Strata customer account, request status and protected operations */
+.strataOrderHeaderLinks{display:flex;align-items:center;gap:9px}
+.strataOrderHeaderLinks .strataHeaderCta{cursor:pointer}
+.strataSubmitOrder:disabled,.strataGoogleButton:disabled{opacity:.55;cursor:not-allowed}
+.strataConnectionNotice{padding:13px 15px;border:1px solid #9b352f;background:#fff0ed;color:#54201c;font-size:.82rem;line-height:1.65;overflow-wrap:anywhere}
+.strataOrderSuccess{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.strataOrderSuccess h2{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(2.8rem,5vw,4.8rem);line-height:.88;margin:0}
+.strataOrderSuccess h2 em{font-style:normal;color:#e3262e}
+.strataOrderSuccess>p{margin:0;line-height:1.65}
+.strataOrderReference{display:block;max-width:100%;padding:12px;background:#e6dfd5;color:#111;overflow-wrap:anywhere;font-size:.9rem}
+.strataOrderSuccess .strataButton{width:100%;justify-content:center;text-align:center}
+.strataTextButton{border:0;background:transparent;color:#332d27;text-decoration:underline;cursor:pointer;padding:8px 0}
+.strataAccountPage{min-height:100vh}
+.strataAccountLayout{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(30px,6vw,85px);max-width:1280px;margin:0 auto;padding:clamp(40px,7vw,90px) 6vw}
+.strataAccountIntro h1,.strataOperationsWrap>h1{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(4rem,7.5vw,7rem);line-height:.82;margin:0 0 25px}
+.strataAccountIntro h1 em,.strataOperationsWrap>h1 em{font-style:normal;color:#e3262e}
+.strataAccountIntro>p:not(.strataEyebrow){color:#d1cbc4;line-height:1.75}
+.strataAccountIntro .strataButton{width:100%;justify-content:center;margin-top:20px}
+.strataAccountIdentity{font-size:.76rem!important;color:#c1b9b0!important;overflow-wrap:anywhere}
+.strataAccountOrders{min-width:0}
+.strataAccountOrders .strataSectionHead{align-items:end}
+.strataAccountOrders .strataSectionHead h2{font-size:clamp(2.8rem,5vw,4.6rem)}
+.strataOrderCount{font-size:.64rem;letter-spacing:.12em;font-weight:900;color:#e3262e;white-space:nowrap;padding-bottom:12px}
+.strataAccountEmpty{padding:28px 22px;background:#1c1918;border:1px solid #48403a;color:#e8e1d9;line-height:1.7}
+.strataAccountEmpty p{color:#c1b9b0}
+.strataAccountEmpty .strataButton{margin-top:10px}
+.strataAccountOrderList{display:grid;gap:12px}
+.strataAccountOrder{padding:20px;background:#f5f1e9;color:#171514;border-left:3px solid #e3262e;overflow-wrap:anywhere}
+.strataAccountOrderTop,.strataOperationsOrderTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.strataAccountOrderTop>span,.strataAccountOrder>small,.strataOperationsOrderTop small{font-size:.68rem;color:#655d55;line-height:1.5}
+.strataAccountOrderTop>b,.strataOperationsOrderTop>b{display:inline-block;background:#ded6cb;color:#2d2925;padding:6px 8px;font-size:.62rem;letter-spacing:.04em;text-align:center}
+.strataAccountOrderTop>b[data-status="Completed"],.strataOperationsOrderTop>b[data-status="Completed"]{background:#d7ead8;color:#174c20}
+.strataAccountOrderTop>b[data-status="Cancelled"],.strataOperationsOrderTop>b[data-status="Cancelled"]{background:#f5d8d4;color:#78251f}
+.strataAccountOrder h3{font-size:1.12rem;line-height:1.45;margin:17px 0 8px;white-space:pre-wrap}
+.strataAccountOrder>p{font-size:.83rem;line-height:1.6}
+.strataAccountStatus{padding-top:10px;border-top:1px solid #d8d0c6}
+.strataAccountStaffNote{background:#e8e0d4;padding:12px;line-height:1.65;white-space:pre-wrap}
+.strataAccountOrder>a{display:inline-block;margin-top:15px;color:#a91e25;font-size:.68rem;font-weight:950;letter-spacing:.08em}
+.strataOperationsPage{min-height:100vh}
+.strataOperationsWrap{max-width:1120px;margin:0 auto;padding:clamp(38px,6vw,75px) 5vw 70px}
+.strataOperationsWrap>h1{margin-bottom:18px}
+.strataOperationsLead{max-width:620px;color:#c7c0b9;line-height:1.75;margin-bottom:28px}
+.strataOperationsLogin{max-width:520px;padding:24px;background:#f5f1e9;color:#171514}
+.strataOperationsLogin p{line-height:1.65;color:#514a44}
+.strataOperationsBar{display:flex;justify-content:space-between;gap:15px;padding:13px 0;color:#c7c0b9;font-size:.7rem;letter-spacing:.08em;overflow-wrap:anywhere}
+.strataOperationsQueue{display:grid;gap:13px}
+.strataOperationsOrder{padding:21px;background:#f5f1e9;color:#171514}
+.strataOperationsOrderTop h2{margin:8px 0;font-size:1.5rem}
+.strataOperationsOrderTop .strataEyebrow{color:#a91e25;font-size:.62rem}
+.strataOperationsItems{font-weight:750;white-space:pre-wrap;line-height:1.6}
+.strataOperationsOrder>p{font-size:.83rem;line-height:1.6;overflow-wrap:anywhere}
+.strataOperationsOrder>p a{color:#a91e25}
+.strataOperationsControls{display:grid;grid-template-columns:minmax(180px,.55fr) 1.45fr auto;align-items:end;gap:12px;margin-top:18px;padding-top:17px;border-top:1px solid #d5ccc1}
+.strataOperationsControls label{display:grid;gap:7px;font-size:.72rem;font-weight:900}
+.strataOperationsControls select,.strataOperationsControls textarea{width:100%;min-height:44px;padding:10px;border:1px solid #bdb5ab;background:#fff;color:#171514;font:inherit;font-size:.85rem}
+.strataOperationsControls textarea{resize:vertical;line-height:1.5}
+.strataOperationsControls .strataButton{border:0;cursor:pointer;white-space:nowrap}
+.strataOperationsControls .strataButton:disabled{opacity:.55}
+.strataOperationsFootnote{margin-top:26px;color:#c1b9b0;font-size:.75rem;line-height:1.7;overflow-wrap:anywhere}
+.strataOperationsFootnote code{color:#fff}
+@media(max-width:820px){.strataAccountLayout{grid-template-columns:1fr;padding:38px 18px 55px;gap:35px}.strataOperationsWrap{padding:38px 18px 55px}.strataOperationsControls{grid-template-columns:1fr 1fr}.strataOperationsControls label:nth-child(2){grid-column:1/-1}.strataOperationsControls .strataButton{grid-column:1/-1}}
+@media(max-width:520px){.strataOrderHeaderLinks{gap:6px}.strataOrderHeaderLinks .strataHeaderCta{font-size:.56rem;padding:11px 8px}.strataAccountOrder{padding:15px}.strataAccountOrderTop{flex-direction:column}.strataOperationsOrder{padding:15px}.strataOperationsOrderTop{flex-direction:column}.strataOperationsBar{font-size:.62rem;flex-direction:column}.strataOperationsControls{grid-template-columns:1fr}.strataOperationsControls label:nth-child(2),.strataOperationsControls .strataButton{grid-column:auto}}
+
+
+/* Strata order-first customer journey: clear branch choice, calm onboarding, mobile-first controls. */
+.strataOrderFirstHome .strataHeader nav a:focus-visible,
+.strataOrderFirstHome .strataHeaderCta:focus-visible,
+.strataOrderFirstHome .strataBranchCard:focus-visible,
+.strataOrderFirstHome .strataButton:focus-visible,
+.strataAccountPage .strataPostSubmitActions a:focus-visible {
+  outline: 3px solid #ff777b;
+  outline-offset: 4px;
+}
+.strataOrderFirstHome .strataHero {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .86fr);
+}
+.strataOrderFirstHome .strataHeroCopy { max-width: 720px; }
+.strataOrderFirstHome .strataBranchChooser {
+  align-items: start;
+  background: #171515;
+}
+.strataOrderFirstHome .strataBranchIntro h2 { color: #fff; }
+.strataOrderFirstHome .strataBranchIntro > p:last-child {
+  max-width: 440px;
+  color: #c7c0b9;
+  line-height: 1.7;
+}
+.strataOrderFirstHome .strataBranchTruth {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--s-red);
+  background: #242020;
+  font-size: .82rem;
+}
+.strataOrderFirstHome .strataBranchCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.strataOrderFirstHome .strataBranchCard {
+  position: relative;
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 9px;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid #5b5550;
+  background: #242020;
+  isolation: isolate;
+}
+.strataOrderFirstHome .strataBranchCard img,
+.strataOrderFirstHome .strataBranchCardShade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+}
+.strataOrderFirstHome .strataBranchCard img { object-fit: cover; transition: transform .35s ease; }
+.strataOrderFirstHome .strataBranchCardShade {
+  z-index: -1;
+  background: linear-gradient(0deg, rgba(0,0,0,.92), rgba(0,0,0,.25) 76%);
+}
+.strataOrderFirstHome .strataBranchCard:hover img { transform: scale(1.035); }
+.strataOrderFirstHome .strataBranchNumber {
+  color: #ff999c;
+  font-size: .61rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+.strataOrderFirstHome .strataBranchCard strong {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  line-height: .95;
+  letter-spacing: .02em;
+}
+.strataOrderFirstHome .strataBranchCard small { color: #f0e9e2; font-size: .78rem; line-height: 1.5; }
+.strataOrderFirstHome .strataBranchCard b {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--s-red);
+  font-size: .69rem;
+  letter-spacing: .1em;
+}
+.strataOrderFirstHome .strataOrderSteps { background: var(--s-paper); color: #101010; }
+.strataOrderFirstHome .strataStepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.strataOrderFirstHome .strataStepGrid article {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid #ded7cc;
+  background: #fff;
+}
+.strataOrderFirstHome .strataStepGrid article > span {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  background: var(--s-red);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 950;
+}
+.strataOrderFirstHome .strataStepGrid h3 {
+  margin: 22px 0 9px;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+  line-height: 1;
+}
+.strataOrderFirstHome .strataStepGrid p { margin: 0; color: #57514c; font-size: .88rem; line-height: 1.65; }
+.strataOrderFirstHome .strataPhotoStory { padding: clamp(58px, 8vw, 100px) 8vw; background: #f5f1e9; color: #101010; }
+.strataOrderFirstHome .strataPhotoStoryHeading { display: flex; align-items: end; justify-content: space-between; gap: 25px; margin-bottom: 30px; }
+.strataOrderFirstHome .strataPhotoStoryHeading h2 {
+  margin: 0;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(2.8rem, 6.5vw, 6rem);
+  line-height: .88;
+}
+.strataOrderFirstHome .strataPhotoStoryHeading h2 em { color: var(--s-red); font-style: normal; }
+.strataOrderFirstHome .strataPhotoStoryHeading > p:last-child { max-width: 300px; color: #57514c; font-size: .9rem; line-height: 1.65; }
+.strataOrderFirstHome .strataOrderSteps .strataMenuPrompt { margin-top: 24px; }
+.strataFieldHelp { display: block; margin-top: 6px; color: #6b625b; font-size: .76rem; font-weight: 400; line-height: 1.5; }
+.strataPostSubmitSetup {
+  grid-column: 1 / -1;
+  margin: 0 0 22px;
+  padding: clamp(20px, 4vw, 34px);
+  border: 1px solid #4d4440;
+  border-left: 4px solid var(--s-red);
+  background: #211d1d;
+  color: #fff;
+}
+.strataPostSubmitSetup h2 {
+  margin: 0 0 12px;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: .98;
+}
+.strataPostSubmitSetup > p:not(.strataEyebrow) { max-width: 760px; color: #ded6ce; font-size: .9rem; line-height: 1.7; }
+.strataPostSubmitActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.strataOrderPage .strataOrderForm label { display: block; }
+.strataOrderPage .strataOrderForm label > small { font-weight: 400; }
+.strataOrderPage .strataFormRow select { min-width: 0; width: 100%; }
+.strataAccountPage .strataGoogleButton { scroll-margin-top: 24px; }
+.strataAccountPage .strataAccountOrders { scroll-margin-top: 24px; }
+@media (max-width: 900px) {
+  .strataOrderFirstHome .strataHero { grid-template-columns: minmax(0, 1fr) minmax(250px, .8fr); gap: 28px; }
+  .strataOrderFirstHome .strataBranchChooser { grid-template-columns: minmax(0, 1fr); gap: 25px; }
+}
+@media (max-width: 700px) {
+  .strataOrderFirstHome .strataHeader { align-items: center; flex-wrap: wrap; gap: 14px; }
+  .strataOrderFirstHome .strataHeader nav { order: 3; width: 100%; justify-content: space-between; gap: 12px; font-size: .62rem; }
+  .strataOrderFirstHome .strataHeaderCta { padding: 12px; }
+  .strataOrderFirstHome .strataHero { grid-template-columns: minmax(0, 1fr); padding: 44px 6vw 60px; }
+  .strataOrderFirstHome .strataHero h1 { font-size: clamp(4rem, 18vw, 6.5rem); }
+  .strataOrderFirstHome .strataHeroVisual { min-height: 340px; margin: 0 10px 0 18px; }
+  .strataOrderFirstHome .strataHeroVertical { display: none; }
+  .strataOrderFirstHome .strataHeroFoot { line-height: 1.7; }
+  .strataOrderFirstHome .strataBranchCards { grid-template-columns: minmax(0, 1fr); }
+  .strataOrderFirstHome .strataBranchCard { min-height: 270px; }
+  .strataOrderFirstHome .strataStepGrid { grid-template-columns: minmax(0, 1fr); }
+  .strataOrderFirstHome .strataPhotoStoryHeading { align-items: flex-start; flex-direction: column; }
+  .strataOrderFirstHome .strataPhotoGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 240px 200px 200px; }
+  .strataOrderFirstHome .strataPhotoLarge { grid-column: 1 / -1; grid-row: auto; }
+  .strataOrderFirstHome .strataPhotoStory { padding: 55px 6vw; }
+  .strataPostSubmitActions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .strataPostSubmitActions .strataButton { width: 100%; text-align: center; }
+}
+@media (max-width: 420px) {
+  .strataOrderFirstHome .strataTicker { gap: 8px; font-size: .55rem; letter-spacing: .06em; }
+  .strataOrderFirstHome .strataTicker span:nth-child(2) { display: none; }
+  .strataOrderFirstHome .strataHeader nav { flex-wrap: wrap; }
+  .strataOrderFirstHome .strataPhotoGrid { grid-template-columns: minmax(0, 1fr); grid-template-rows: 250px 200px 200px 200px; }
+  .strataOrderFirstHome .strataPhotoLarge { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .strataOrderFirstHome .strataBranchCard img { transition: none; }
+}
+
+
+/* Saved-request summary: confirm the branch and fulfilment choice without adding another checkout step. */
+.strataOrderSummary{display:grid;gap:0;margin:8px 0 4px;border:1px solid #d8cfc2;background:#fff}
+.strataOrderSummary p{display:grid;grid-template-columns:minmax(100px,.34fr) minmax(0,1fr);gap:14px;margin:0;padding:12px 14px;border-bottom:1px solid #eee8df;font-size:.84rem;line-height:1.5}
+.strataOrderSummary p:last-child{border-bottom:0}
+.strataOrderSummary strong{font-size:.69rem;letter-spacing:.04em;text-transform:uppercase;color:#5d554b}
+.strataOrderSummary span{overflow-wrap:anywhere;white-space:pre-wrap}
+@media(max-width:560px){.strataOrderSummary p{grid-template-columns:1fr;gap:4px;padding:11px 12px}}
+
+
+/* Strata's editable starter catalogue: same visual language as the existing storefront. */
+.strataMenuShowcase{padding:clamp(54px,7vw,96px) clamp(20px,6vw,90px);background:#f5f1e9;color:#171514}
+.strataMenuShowcaseHead{display:grid;grid-template-columns:1fr minmax(250px,.6fr);gap:32px;align-items:end;max-width:1280px;margin:0 auto 30px}
+.strataMenuShowcaseHead h2,.strataMenuAdminHead h2{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(3.2rem,6vw,5.6rem);line-height:.84;margin:0}
+.strataMenuShowcaseHead h2 em,.strataMenuAdminHead h2 em{font-style:normal;color:#e3262e}
+.strataMenuShowcaseHead>p{max-width:440px;color:#5b534b;line-height:1.7;margin:0 0 4px}
+.strataMenuCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:1280px;margin:auto}
+.strataMenuCard{min-width:0;background:#fff;border:1px solid #d9d0c5}
+.strataMenuCardImage{position:relative;height:220px;overflow:hidden;background:#211c1c}
+.strataMenuCardImage img{width:100%;height:100%;object-fit:cover;display:block}
+.strataMenuCardImage span{position:absolute;left:14px;bottom:14px;background:#e3262e;color:#fff;padding:8px 10px;font-size:.62rem;font-weight:950;letter-spacing:.1em}
+.strataMenuCardBody{padding:22px}
+.strataMenuCardTitle{display:flex;align-items:start;justify-content:space-between;gap:15px}
+.strataMenuCardTitle h3{font-size:clamp(1.5rem,3vw,2.1rem);margin:0;line-height:1.05}
+.strataMenuCardTitle>strong{white-space:nowrap;font-size:1.05rem}
+.strataMenuCardBody>p{min-height:42px;color:#625950;font-size:.9rem;line-height:1.6}
+.strataMenuCardBody .strataButton{margin-top:8px}
+.strataMenuDisclaimer{max-width:1280px;margin:20px auto 0;color:#6b6258;font-size:.72rem;line-height:1.6}
+.strataMenuEmpty{max-width:1280px;margin:auto;padding:28px;background:#fff}
+.strataMenuPicker{min-width:0;margin:0;padding:16px;border:1px solid #d0c6ba;background:#fff}
+.strataMenuPicker legend{padding:0 7px;font-size:.88rem;font-weight:950}
+.strataMenuPicker>p{margin:0 0 13px;color:#5d554d;font-size:.74rem;line-height:1.6}
+.strataMenuPickRow{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:14px;align-items:center;padding:13px 0;border-top:1px solid #e7e0d7}
+.strataMenuPickRow>div{display:grid;gap:4px;min-width:0}
+.strataMenuPickRow>div strong{font-size:.9rem}
+.strataMenuPickRow>div small{font-size:.73rem;font-weight:500;color:#625950;line-height:1.45}
+.strataMenuPickRow>div b{font-size:.76rem}
+.strataMenuPickRow>label{display:grid;gap:4px;font-size:.65rem;font-weight:900}
+.strataMenuPickRow select{min-height:42px!important;padding:7px!important}
+.strataMenuEstimate{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding:13px;background:#211c1c;color:#fff;font-size:.8rem}
+.strataMenuEstimate strong{font-size:1rem}
+.strataMenuAdmin{display:grid;gap:12px;margin-top:36px}
+.strataMenuAdminHead{display:flex;align-items:end;justify-content:space-between;gap:22px;margin-bottom:8px}
+.strataMenuAdminHead>div>p:last-child{max-width:550px;color:#d1cbc4;line-height:1.6}
+.strataMenuAdminEmpty{padding:18px;background:#211c1c;color:#e4ddd5;line-height:1.6}
+.strataMenuAdminItem{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px;padding:18px;background:#f5f1e9;color:#171514}
+.strataMenuAdminItem h3{margin:6px 0;font-size:1.15rem}
+.strataMenuAdminItem p{margin:0;color:#625950;font-size:.8rem;line-height:1.5}
+.strataMenuStatus{display:inline-block;font-size:.58rem;font-weight:950;letter-spacing:.08em;color:#8b332b}
+.strataMenuStatus.isActive{color:#246b36}
+.strataMenuAdminActions{display:flex;flex-wrap:wrap;gap:7px}
+.strataMenuAdminActions button{min-height:36px;padding:8px 10px;border:1px solid #bdb5ab;background:#fff;color:#171514;font-size:.62rem;font-weight:950;cursor:pointer}
+.strataMenuAdminActions button:disabled{opacity:.5}
+.strataMenuEditor{display:grid;gap:14px;margin-top:10px;padding:22px;background:#f5f1e9;color:#171514}
+.strataMenuEditor label{display:grid;gap:7px;font-size:.73rem;font-weight:900}
+.strataMenuEditor input:not([type=checkbox]){width:100%;min-height:46px;padding:11px;border:1px solid #bdb5ab;background:#fff;color:#171514;font:inherit;font-weight:500}
+.strataMenuEditorRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:end}
+.strataMenuEditor .strataMenuActiveToggle{display:flex;align-items:center;gap:10px;min-height:46px}
+.strataMenuEditor input[type=checkbox]{width:18px;height:18px;accent-color:#e3262e}
+.strataMenuEditorActions{display:flex;flex-wrap:wrap;gap:10px}
+.strataMenuEditorActions button{border:0;cursor:pointer}
+.strataMenuEditorActions button:disabled{opacity:.5}
+.strataOperationsPage .strataMenuAdminHead h2{font-size:clamp(2.8rem,5vw,4.5rem)}
+@media(max-width:760px){.strataMenuShowcase{padding:54px 18px}.strataMenuShowcaseHead{grid-template-columns:1fr;gap:17px}.strataMenuShowcaseHead h2{font-size:clamp(3.2rem,15vw,5rem)}.strataMenuCards{grid-template-columns:1fr}.strataMenuCardImage{height:200px}.strataMenuCardBody{padding:18px}.strataMenuAdminHead{align-items:start;flex-direction:column}.strataMenuAdminItem{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px}.strataMenuAdminActions{grid-column:1/-1}.strataMenuEditor{padding:16px}.strataMenuEditorRow{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.strataMenuCardImage img{transition:none}}

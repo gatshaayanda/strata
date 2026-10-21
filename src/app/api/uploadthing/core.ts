@@ -2,19 +2,14 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
-// Match the proven Admin Hub / Sparkle Legacy UploadThing setup.
-// Keep the client-side validation in request-form.tsx in sync with these limits.
+// UploadThing is enabled for future Strata image/PDF attachment workflows.
+// No customer-facing upload form is wired into the ordering journey yet.
 export const ourFileRouter = {
   fileUploader: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
     pdf: { maxFileSize: "4MB", maxFileCount: 1 },
-  }).onUploadComplete(async ({ file }) => {
-    console.info("[The Plug] sourcing attachment uploaded", {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      urlAvailable: Boolean(file.url || file.ufsUrl),
-    });
+  }).onUploadComplete(async () => {
+    // No upload completion workflow is enabled for Strata.
   }),
 } satisfies FileRouter;
 
