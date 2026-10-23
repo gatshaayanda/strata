@@ -3,16 +3,19 @@
   "name": "Strata Sa’o Bitsa — Come Get Hooked",
   "short_name": "Strata",
   "description": "Fish, chips and good times. Strata Sa’o Bitsa in Botswana.",
-  "categories": [
-    "food",
-    "lifestyle"
-  ],
+  "categories": ["food", "lifestyle"],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#101010",
   "theme_color": "#101010",
   "icons": [
+    {
+      "src": "/stratalogo.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
     {
       "src": "/strata-icon.svg",
       "sizes": "any",
@@ -42,9 +45,9 @@
       "url": "/order",
       "icons": [
         {
-          "src": "/strata-icon.svg",
+          "src": "/stratalogo.jpeg",
           "sizes": "any",
-          "type": "image/svg+xml"
+          "type": "image/jpeg"
         }
       ]
     },
@@ -55,9 +58,9 @@
       "url": "/#locations",
       "icons": [
         {
-          "src": "/strata-icon.svg",
+          "src": "/stratalogo.jpeg",
           "sizes": "any",
-          "type": "image/svg+xml"
+          "type": "image/jpeg"
         }
       ]
     }
