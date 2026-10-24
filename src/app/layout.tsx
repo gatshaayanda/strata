@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [{ url: "/strata-brand-logo.svg", type: "image/svg+xml" }],
-    apple: strataLogo,
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Strata", statusBarStyle: "black-translucent" },
