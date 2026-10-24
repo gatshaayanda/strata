@@ -14,12 +14,6 @@
   "theme_color": "#101010",
   "icons": [
     {
-      "src": "/stratalogo.jpeg",
-      "sizes": "any",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
       "src": "/strata-brand-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
@@ -30,6 +24,12 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "lang": "en",
@@ -42,9 +42,9 @@
       "url": "/order",
       "icons": [
         {
-          "src": "/stratalogo.jpeg",
+          "src": "/strata-brand-logo.svg",
           "sizes": "any",
-          "type": "image/jpeg"
+          "type": "image/svg+xml"
         }
       ]
     },
@@ -55,9 +55,9 @@
       "url": "/#locations",
       "icons": [
         {
-          "src": "/stratalogo.jpeg",
+          "src": "/strata-brand-logo.svg",
           "sizes": "any",
-          "type": "image/jpeg"
+          "type": "image/svg+xml"
         }
       ]
     }
