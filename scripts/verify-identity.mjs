@@ -11,7 +11,8 @@ const criticalFiles = [
   "src/app/pwa-register.tsx",
   "public/manifest.webmanifest",
   "public/sw.js",
-  "public/strata-icon.svg"
+  "public/strata-icon.svg",
+  "public/strata-brand-logo.svg"
 ];
 const forbidden = [
   /the plug/i,
@@ -43,16 +44,15 @@ if (fs.existsSync(manifestPath)) {
   if (manifest.name !== "Strata Sa’o Bitsa — Come Get Hooked") failures.push("manifest: wrong full app name");
   if (manifest.short_name !== "Strata") failures.push("manifest: wrong short app name");
   if (manifest.theme_color !== "#101010") failures.push("manifest: wrong theme color");
-  if (!manifest.icons?.some(icon => icon.src === "/strata-icon.svg")) failures.push("manifest: Strata SVG icon missing");
-  if (!manifest.icons?.some(icon => icon.src === "/apple-touch-icon.png" && icon.sizes === "180x180")) failures.push("manifest: Apple touch icon missing");
-  if (!fs.existsSync(path.join(root, "public/apple-touch-icon.png"))) failures.push("manifest: Apple touch icon file missing");
+  if (!manifest.icons?.some(icon => icon.src === "/strata-brand-logo.svg")) failures.push("manifest: original Strata logo SVG missing");
+  if (!manifest.icons?.some(icon => icon.src === "/stratalogo.jpeg")) failures.push("manifest: original Strata logo image missing");
 }
 const swPath = path.join(root, "public/sw.js");
 if (fs.existsSync(swPath)) {
   const sw = fs.readFileSync(swPath, "utf8");
   if (!/strata-shell-v\d+/.test(sw)) failures.push("service worker: missing Strata-specific cache namespace");
-  if (!sw.includes("/strata-icon.svg")) failures.push("service worker: Strata SVG icon missing from app shell");
-  if (!sw.includes("/apple-touch-icon.png")) failures.push("service worker: Apple touch icon missing from app shell");
+  if (!sw.includes("/strata-brand-logo.svg")) failures.push("service worker: original Strata logo SVG missing from app shell");
+  if (!sw.includes("/stratalogo.jpeg")) failures.push("service worker: original Strata logo image missing from app shell");
   if (/theplug-shell-|plug-icon\.svg|firebase-messaging-compat/.test(sw)) failures.push("service worker: inherited cache, icon, or messaging dependency remains");
 }
 
