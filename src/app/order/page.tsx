@@ -118,7 +118,7 @@ export default function OrderPage() {
 
   return <main className="strataSite strataOrderPage">
     <header className="strataHeader">
-      <Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="48" height="48" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
+      <Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="48" height="48" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
       <div className="strataOrderHeaderLinks"><Link href="/account" className="strataHeaderCta">MY REQUESTS</Link><Link href="/" className="strataHeaderCta">← HOME</Link></div>
     </header>
     <section className="strataOrderLayout">
@@ -171,6 +171,6 @@ export default function OrderPage() {
         <p className="strataFormFootnote">A request reference appears only after Strata confirms it was saved. Order status is not a payment receipt or delivery guarantee. Submit as a guest; Google is optional for keeping history easier to access later. Check My Requests for updates.</p>
       </form>}
     </section>
-    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><span>FISH. CHIPS. GOOD TIMES.</span><Link href="/account">MY REQUESTS ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
+    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><span>FISH. CHIPS. GOOD TIMES.</span><Link href="/account">MY REQUESTS ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
   </main>;
 }
