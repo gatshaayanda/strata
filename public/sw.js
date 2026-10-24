@@ -1,12 +1,12 @@
-const CACHE_VERSION = "strata-shell-v3";
+const CACHE_VERSION = "strata-shell-v4";
 const SHELL_CACHE = CACHE_VERSION;
 const STATIC_LIMIT = 100;
 const APP_SHELL = [
   "/",
   "/order",
   "/manifest.webmanifest",
-  "/strata-icon.svg",
-  "/apple-touch-icon.png",
+  "/stratalogo.jpeg",
+  "/strata-brand-logo.svg",
   "/strata-assets/fish.jpeg",
   "/strata-assets/groupline.jpeg",
   "/strata-assets/groupline1.jpeg",
