@@ -84,7 +84,7 @@ export default function AccountPage() {
 
   return <main className="strataSite strataAccountPage">
     <header className="strataHeader">
-      <Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
+      <Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
       <Link href="/order" className="strataHeaderCta">NEW REQUEST ↗</Link>
     </header>
     <section className="strataAccountLayout">
@@ -120,6 +120,6 @@ export default function AccountPage() {
         </div>}
       </section>
     </section>
-    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/order">START AN ORDER ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
+    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/order">START AN ORDER ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
   </main>;
 }
