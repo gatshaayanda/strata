@@ -27,7 +27,7 @@ export default function Home() {
 
       <header className="strataHeader">
         <Link href="/" className="strataBrand" aria-label="Strata Sa’o Bitsa home">
-          <img src="/strata-icon.svg" alt="" width="48" height="48" />
+          <img src="/strata-brand-logo.svg" alt="" width="48" height="48" />
           <span><strong>STRATA</strong><small>SA’O BITSA</small></span>
         </Link>
         <nav aria-label="Main navigation">
@@ -118,7 +118,7 @@ export default function Home() {
       </section>
 
       <footer className="strataFooter">
-        <Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
+        <Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42" /><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
         <span>FISH. CHIPS. GOOD TIMES.</span>
         <Link href="#locations">CHOOSE A BRANCH ↗</Link>
         <Link href="/account">MY REQUESTS ↗</Link>
