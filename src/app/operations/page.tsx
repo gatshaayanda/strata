@@ -177,7 +177,7 @@ export default function OperationsPage() {
 
   return <main className="strataSite strataOperationsPage">
     <header className="strataHeader">
-      <Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
+      <Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
       <div className="strataOrderHeaderLinks"><Link href="/account" className="strataHeaderCta">CUSTOMER VIEW</Link>{user && <button className="strataHeaderCta" type="button" onClick={() => void signOut(auth)}>SIGN OUT</button>}</div>
     </header>
     <section className="strataOperationsWrap">
@@ -226,6 +226,6 @@ export default function OperationsPage() {
       {message && <p className="strataConnectionNotice" role="status">{message}</p>}
       <p className="strataOperationsFootnote">Only a server-issued Strata Operations session with a matching <code>admins/{'{uid}'}</code> role document can access this queue. Customer records and the operations queue are not cached for offline access.</p>
     </section>
-    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-icon.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/">CUSTOMER STOREFRONT ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
+    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/">CUSTOMER STOREFRONT ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
   </main>;
 }
