@@ -87,6 +87,21 @@ if (fs.existsSync(orderPath)) {
   if (!order.includes("Choose a city")) failures.push("order form: direct entry must require explicit branch selection");
 }
 
+
+const installPath = path.join(root, "src/app/pwa-register.tsx");
+if (fs.existsSync(installPath)) {
+  const install = fs.readFileSync(installPath, "utf8");
+  if (!install.includes('src="/strata-brand-logo.svg"')) failures.push("PWA install UI: original Strata logo must be displayed in install surfaces");
+  if (!install.includes("beforeinstallprompt") || !install.includes("prompt.prompt()")) failures.push("PWA install: native prompt must be retained and invoked from the branded install action");
+  if (!install.includes("isIosSafari") || !install.includes("Add to Home Screen")) failures.push("PWA install: iOS Safari Add to Home Screen guidance is missing");
+  if (!install.includes('Boolean(deferredPrompt || isIosSafari())')) failures.push("PWA install: install card must only appear for a native prompt or iOS Safari");
+}
+const layoutPath = path.join(root, "src/app/layout.tsx");
+if (fs.existsSync(layoutPath)) {
+  const layout = fs.readFileSync(layoutPath, "utf8");
+  if (!layout.includes("strata-early-install-capture") || !layout.includes("beforeInteractive") || !layout.includes("__strataInstallPrompt")) failures.push("PWA install: early beforeinstallprompt capture is missing");
+}
+
 if (failures.length) {
   console.error("STRATA IDENTITY VERIFICATION FAILED");
   for (const failure of failures) console.error(" - " + failure);
