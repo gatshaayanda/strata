@@ -1182,7 +1182,7 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 .strataCompactHome .strataHeader{min-height:72px;padding:11px clamp(18px,5vw,72px)}
 .strataCompactHome .strataHeader nav{gap:clamp(14px,2.4vw,28px);font-size:.66rem}
 .strataCompactHero{grid-template-columns:1fr .86fr;gap:clamp(28px,5vw,70px);padding:clamp(38px,5vw,66px) clamp(22px,7vw,100px)}
-.strataCompactHero .strataHero h1{font-size:clamp(4.2rem,8.4vw,8rem)}
+.strataCompactHero h1{font-size:clamp(4.2rem,8.4vw,8rem)}
 .strataCompactHero .strataLead{max-width:430px;margin-top:20px;font-size:.94rem;line-height:1.6}
 .strataCompactHero .strataHeroActions{margin-top:22px}
 .strataCompactHero .strataHeroVisual{min-height:clamp(330px,36vw,470px);transform:none}
@@ -1240,3 +1240,5 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
  .strataFooter{padding-bottom:25px}
 }
 @media(prefers-reduced-motion:reduce){.strataBranchCard>img{transition:none}}
+
+@media(max-width:760px){body:has(.strata-install-card) .strataMobileNav{bottom:150px}}
