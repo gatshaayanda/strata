@@ -1242,3 +1242,53 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
 @media(prefers-reduced-motion:reduce){.strataBranchCard>img{transition:none}}
 
 @media(max-width:760px){body:has(.strata-install-card) .strataMobileNav{bottom:150px}}
+
+
+/* Final compact homepage overrides: higher specificity than legacy order-first layout rules. */
+.strataOrderFirstHome.strataCompactHome .strataHeader nav{order:initial;width:auto;flex-wrap:nowrap;justify-content:flex-start}
+.strataOrderFirstHome.strataCompactHome .strataHero{grid-template-columns:minmax(0,1fr) minmax(280px,.86fr);gap:clamp(24px,4vw,58px);padding:clamp(34px,4vw,58px) clamp(20px,6vw,82px)}
+.strataOrderFirstHome.strataCompactHome .strataHero h1{font-size:clamp(4rem,8vw,7.2rem)}
+.strataOrderFirstHome.strataCompactHome .strataHeroVisual{min-height:clamp(290px,34vw,420px);margin:0;transform:none}
+.strataOrderFirstHome.strataCompactHome .strataBranchChooser{grid-template-columns:.78fr 1.22fr;gap:clamp(20px,3vw,42px)}
+.strataOrderFirstHome.strataCompactHome .strataBranchCards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.strataCompactMenu{padding:34px clamp(18px,6vw,82px)!important}
+.strataCompactMenu .strataMenuShowcaseHead{grid-template-columns:1fr auto;align-items:end;margin-bottom:18px}
+.strataCompactMenu .strataMenuShowcaseHead h2{font-size:clamp(2.7rem,5vw,4.4rem)}
+.strataCompactMenu .strataMenuShowcaseHead>p{display:none}
+.strataMenuBrowseLink{font-size:.68rem;font-weight:950;letter-spacing:.04em;color:#e3262e}
+.strataCompactMenu .strataMenuCards{gap:10px}
+.strataCompactMenu .strataMenuCard{display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;min-height:116px}
+.strataCompactMenu .strataMenuCardImage{height:100%;min-height:116px}
+.strataCompactMenu .strataMenuCardBody{padding:12px 15px}
+.strataCompactMenu .strataMenuCardTitle{align-items:center}
+.strataCompactMenu .strataMenuCardTitle h3{font-size:1.15rem}
+.strataCompactMenu .strataMenuCardBody>p{min-height:0;margin:6px 0 0;font-size:.74rem;line-height:1.4}
+.strataCompactMenu .strataMenuDisclaimer{margin-top:11px;font-size:.66rem}
+.strataCompactPromise{padding-top:32px!important;padding-bottom:32px!important}
+.strataOrderFirstHome.strataCompactHome .strataFooter{padding-top:22px;padding-bottom:22px}
+@media(max-width:760px){
+ .strataOrderFirstHome.strataCompactHome .strataHeader{flex-wrap:nowrap;gap:8px}
+ .strataOrderFirstHome.strataCompactHome .strataHeader nav{display:none}
+ .strataOrderFirstHome.strataCompactHome .strataHero{grid-template-columns:minmax(0,1fr);padding:30px 18px 25px;gap:16px}
+ .strataOrderFirstHome.strataCompactHome .strataHero h1{font-size:clamp(3.7rem,17vw,5.8rem)}
+ .strataOrderFirstHome.strataCompactHome .strataHeroVisual{min-height:225px;margin:0 0 0 8px}
+ .strataOrderFirstHome.strataCompactHome .strataHeroFoot{margin-top:12px}
+ .strataOrderFirstHome.strataCompactHome .strataBranchChooser{grid-template-columns:minmax(0,1fr);gap:12px;padding:30px 17px}
+ .strataOrderFirstHome.strataCompactHome .strataBranchIntro h2{font-size:clamp(2.5rem,12vw,3.7rem);margin:5px 0 8px}
+ .strataOrderFirstHome.strataCompactHome .strataBranchIntro>p:last-child{margin:0;font-size:.76rem}
+ .strataOrderFirstHome.strataCompactHome .strataBranchCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .strataOrderFirstHome.strataCompactHome .strataBranchCard{min-height:155px;padding:11px}
+ .strataCompactMenu{padding:30px 16px!important}
+ .strataCompactMenu .strataMenuShowcaseHead{grid-template-columns:1fr auto;gap:10px;margin-bottom:13px}
+ .strataCompactMenu .strataMenuShowcaseHead h2{font-size:clamp(2.4rem,11vw,3.5rem)}
+ .strataMenuBrowseLink{max-width:112px;text-align:right;font-size:.58rem;line-height:1.4}
+ .strataCompactMenu .strataMenuCards{grid-template-columns:1fr;gap:8px}
+ .strataCompactMenu .strataMenuCard{grid-template-columns:88px minmax(0,1fr);min-height:94px}
+ .strataCompactMenu .strataMenuCardImage{min-height:94px}
+ .strataCompactMenu .strataMenuCardBody{padding:10px}
+ .strataCompactMenu .strataMenuCardTitle h3{font-size:1rem}
+ .strataCompactMenu .strataMenuCardTitle>strong{font-size:.85rem}
+ .strataCompactMenu .strataMenuCardBody>p{font-size:.66rem}
+ .strataCompactPromise{padding:28px 18px!important}
+ .strataCompactPromise h2{font-size:clamp(2.5rem,11vw,3.6rem)}
+}
