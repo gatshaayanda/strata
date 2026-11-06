@@ -130,3 +130,14 @@ Use evidence to reduce friction, not to justify arbitrary simplification. The fo
 - Preserved recovery branch created before this slice: `checkpoint/strata-before-location-onboarding-2026-10-18`.
 - Earlier recovery branch `checkpoint/strata-before-order-flow-2026-10-18` is also retained; do not rewrite or delete either checkpoint.
 - Changes for this slice are committed directly to `main` as explicitly requested. If regression occurs, inspect the diff first and recover from the preserved checkpoint; do not force-reset `main` without owner approval.
+
+
+## Homepage compactness acceptance — 2026-11-06
+
+- The public homepage is a compact task-entry surface, not a long-form editorial landing page.
+- Keep the first viewport focused on the Strata brand, one concise hero, the dominant branch/order action, and the existing customer-request route.
+- Show Gaborone and Francistown as compact, immediately scannable branch choices. Preserve their `/order?city=...` destinations.
+- Keep the live admin-managed starter menu as a compact catalogue; do not add fabricated menu items, prices, promotions or availability.
+- Remove repeated explanatory sections, redundant per-item order CTAs, oversized image galleries/video blocks and excess vertical padding from the homepage. Keep essential request/price disclaimers concise.
+- Maintain responsive mobile navigation without covering the approved PWA install card or changing the protected installation mechanism.
+- Verify the homepage at narrow mobile widths and desktop widths; inspect the actual rendered page, not only the committed JSX/CSS.
