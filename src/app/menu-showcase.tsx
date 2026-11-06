@@ -11,15 +11,15 @@ export default function MenuShowcase() {
     () => setItems(STARTER_STRATA_MENU.filter(item => item.active)),
   ), []);
 
-  return <section className="strataMenuShowcase" id="menu" aria-labelledby="strataMenuTitle">
+  return <section className="strataMenuShowcase strataCompactMenu" id="menu" aria-labelledby="strataMenuTitle">
     <div className="strataMenuShowcaseHead">
-      <div><p className="strataEyebrow">01 / THE STARTER MENU</p><h2 id="strataMenuTitle">KEEP IT<br /><em>FISH SIMPLE.</em></h2></div>
-      <p>Choose your favourite, then pick the Strata branch that should handle your request. Prices shown are starter prices and can be updated by the team.</p>
+      <div><p className="strataEyebrow">02 / THE MENU</p><h2 id="strataMenuTitle">FISH.<br /><em>DONE RIGHT.</em></h2></div>
+      <Link className="strataMenuBrowseLink" href="#locations">CHOOSE A BRANCH TO ORDER ↗</Link>
     </div>
     {items.length ? <div className="strataMenuCards">{items.map(item => <article className="strataMenuCard" key={item.id}>
-      <div className="strataMenuCardImage"><img src="/strata-assets/fish.jpeg" alt="" loading="lazy" /><span>STRATA SA’O BITSA</span></div>
-      <div className="strataMenuCardBody"><div className="strataMenuCardTitle"><h3>{item.name}</h3><strong>P{item.price.toFixed(2)}</strong></div><p>{item.description}</p><Link className="strataButton strataButtonRed" href="#locations">CHOOSE BRANCH TO ORDER <span>↗</span></Link></div>
+      <div className="strataMenuCardImage"><img src="/strata-assets/fish.jpeg" alt="" loading="lazy" /></div>
+      <div className="strataMenuCardBody"><div className="strataMenuCardTitle"><h3>{item.name}</h3><strong>P{item.price.toFixed(2)}</strong></div><p>{item.description}</p></div>
     </article>)}</div> : <p className="strataMenuEmpty">The menu is being updated. Please check back shortly.</p>}
-    <p className="strataMenuDisclaimer">Menu prices are editable starting values. The selected branch confirms the current price and availability before accepting a request.</p>
+    <p className="strataMenuDisclaimer">Starting prices are editable by the Strata team. Your branch confirms price and availability.</p>
   </section>;
 }
