@@ -8,7 +8,7 @@ const cities = [
 
 export default function Home() {
   return (
-    <main className="strataSite strataCompactHome">
+    <main className="strataSite strataOrderFirstHome strataCompactHome">
       <header className="strataHeader">
         <Link href="/" className="strataBrand" aria-label="Strata Sa’o Bitsa home">
           <img src="/strata-brand-logo.svg" alt="" width="48" height="48" />
