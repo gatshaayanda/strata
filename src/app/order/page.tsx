@@ -75,6 +75,7 @@ export default function OrderPage() {
     if (chosenMenuItems.length && menuEstimate > 0) menuLines.push(`Listed menu estimate: P${menuEstimate.toFixed(2)} (branch to confirm)`);
     if (items.trim()) menuLines.push(`Additional request: ${items.trim()}`);
     const requestItemsText = menuLines.join("\n");
+    const menuItemSnapshots = chosenMenuItems.map(item => ({ name: item.name, price: item.price, quantity: quantities[item.id] ?? 0 }));
     if (!requestItemsText.trim()) {
       setMessage("Choose at least one menu item and quantity, or describe a special request.");
       return;
@@ -99,6 +100,8 @@ export default function OrderPage() {
         city,
         fulfilment,
         itemsText: requestItemsText,
+        menuItems: menuItemSnapshots,
+        menuEstimate,
         deliveryLocation: fulfilment === "Delivery" ? address.trim() : "",
         notes: notes.trim(),
         status: "New",

@@ -49,7 +49,7 @@ service cloud.firestore {
       function validNewOrderRequest() {
         return request.resource.data.keys().hasOnly([
           'customerId', 'customerName', 'phone', 'city', 'fulfilment',
-          'itemsText', 'deliveryLocation', 'notes', 'status', 'source',
+          'itemsText', 'menuItems', 'menuEstimate', 'deliveryLocation', 'notes', 'status', 'source',
           'createdAt', 'updatedAt'
         ])
         && request.resource.data.keys().hasAll([
@@ -70,6 +70,8 @@ service cloud.firestore {
         && request.resource.data.itemsText is string
         && request.resource.data.itemsText.size() >= 3
         && request.resource.data.itemsText.size() <= 1200
+        && (!request.resource.data.keys().hasAny(['menuItems']) || request.resource.data.menuItems is list)
+        && (!request.resource.data.keys().hasAny(['menuEstimate']) || (request.resource.data.menuEstimate is number && request.resource.data.menuEstimate >= 0 && request.resource.data.menuEstimate <= 100000))
         && request.resource.data.deliveryLocation is string
         && request.resource.data.deliveryLocation.size() <= 240
         && request.resource.data.notes is string
@@ -90,12 +92,18 @@ service cloud.firestore {
       allow update: if isAdmin()
         && request.resource.data.customerId == resource.data.customerId
         && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'staffNote', 'updatedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'staffNote', 'updatedAt', 'agreedTotal', 'amountReceived', 'paymentMethod', 'paymentReference', 'paymentUpdatedAt', 'receiptNumber'])
         && request.resource.data.status in [
           'New', 'Received', 'Confirmed', 'Preparing',
           'Ready for pickup', 'Out for delivery', 'Completed', 'Cancelled'
         ]
         && request.resource.data.updatedAt is string
+        && (!request.resource.data.keys().hasAny(['agreedTotal']) || (request.resource.data.agreedTotal is number && request.resource.data.agreedTotal >= 0 && request.resource.data.agreedTotal <= 100000))
+        && (!request.resource.data.keys().hasAny(['amountReceived']) || (request.resource.data.amountReceived is number && request.resource.data.amountReceived >= 0 && request.resource.data.amountReceived <= 100000))
+        && (!request.resource.data.keys().hasAny(['paymentMethod']) || request.resource.data.paymentMethod in ['Cash', 'Orange Money', 'Other'])
+        && (!request.resource.data.keys().hasAny(['paymentReference']) || (request.resource.data.paymentReference is string && request.resource.data.paymentReference.size() <= 100))
+        && (!request.resource.data.keys().hasAny(['paymentUpdatedAt']) || request.resource.data.paymentUpdatedAt is string)
+        && (!request.resource.data.keys().hasAny(['receiptNumber']) || request.resource.data.receiptNumber is string)
         && (
           !request.resource.data.keys().hasAny(['staffNote'])
           || (request.resource.data.staffNote is string && request.resource.data.staffNote.size() <= 1000)

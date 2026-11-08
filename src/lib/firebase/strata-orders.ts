@@ -25,6 +25,14 @@ export type StrataOrderRequest = {
   source: "website";
   createdAt: string;
   updatedAt: string;
+  menuItems?: Array<{ name: string; price: number; quantity: number }>;
+  menuEstimate?: number;
+  agreedTotal?: number;
+  amountReceived?: number;
+  paymentMethod?: "Cash" | "Orange Money" | "Other";
+  paymentReference?: string;
+  paymentUpdatedAt?: string;
+  receiptNumber?: string;
 };
 
 const requests = collection(db, "orderRequests");
@@ -61,5 +69,18 @@ export async function updateStrataOrder(id: string, status: StrataOrderStatus, s
     status,
     staffNote: staffNote.trim().slice(0, 1000),
     updatedAt: new Date().toISOString()
+  });
+}
+
+export type StrataFinanceUpdate = { agreedTotal: number; amountReceived: number; paymentMethod: "Cash" | "Orange Money" | "Other"; paymentReference: string };
+export async function updateStrataOrderFinance(id: string, values: StrataFinanceUpdate) {
+  await updateDoc(doc(db, "orderRequests", id), {
+    agreedTotal: Math.round(values.agreedTotal * 100) / 100,
+    amountReceived: Math.round(values.amountReceived * 100) / 100,
+    paymentMethod: values.paymentMethod,
+    paymentReference: values.paymentReference.trim().slice(0, 100),
+    paymentUpdatedAt: new Date().toISOString(),
+    receiptNumber: "STR-" + id.slice(0, 8).toUpperCase(),
+    updatedAt: new Date().toISOString(),
   });
 }

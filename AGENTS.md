@@ -148,3 +148,13 @@ Use evidence to reduce friction, not to justify arbitrary simplification. The fo
 - This checkpoint does not authorize changes to the protected PWA installation mechanism.
 - QA focus: compact homepage at narrow mobile and desktop widths; branch/order entry points; live admin-managed menu; customer-request flow; verify the installed PWA separately from browser mode.
 - Do not treat a GitHub push or successful build as proof of production deployment or rendered visual QA.
+
+
+## Operations, finance and receipts — 2026-11-08
+- Homepage exposes a simple `ADMIN` route to `/admin`; that route continues to redirect to protected `/operations`. Keep the server-side `STRATA_OPERATIONS_WORD` secret and Firebase custom-token role check. Never expose the access word in client code.
+- Operations includes overview, requests, menu, finance and receipts work areas. Keep the existing small Strata menu CRUD model; do not import JTS salon catalogue or customer data.
+- New order requests store selected item/price/quantity snapshots and a menu estimate. This is provisional only; staff must enter the agreed total before it is treated as confirmed order value.
+- Finance fields (`agreedTotal`, `amountReceived`, `paymentMethod`, `paymentReference`, `paymentUpdatedAt`, `receiptNumber`) are admin-entered reconciliation records, not payment-gateway confirmations. Firestore rules restrict writes to authorized Operations users.
+- Finance summaries distinguish menu estimates, agreed order value, recorded collections and outstanding balances. Older requests without price snapshots remain unclassified rather than receiving fabricated values.
+- Invoice PDFs use staff-confirmed totals; payment receipt PDFs require a positive amount manually recorded as received. Documents disclose that they reflect staff-entered records.
+- Preserve the protected PWA install mechanism and customer privacy. Verify Firestore rules deployment separately from a GitHub push.

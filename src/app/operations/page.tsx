@@ -1,231 +1,47 @@
 "use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithCustomToken, signOut, type User } from "firebase/auth";
-import { auth, hasFirebaseWebConfig } from "@/lib/firebase/client";
-import { isAdminUser } from "@/lib/firebase/data";
-import { STRATA_ORDER_STATUSES, subscribeToAllStrataOrders, updateStrataOrder, type StrataOrderRequest, type StrataOrderStatus } from "@/lib/firebase/strata-orders";
-import { deleteStrataMenuItem, saveStrataMenuItem, seedStrataMenuIfEmpty, slugifyMenuItem, subscribeToStrataMenu, type StrataMenuItem } from "@/lib/firebase/strata-menu";
-
-export default function OperationsPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authorized, setAuthorized] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [orders, setOrders] = useState<StrataOrderRequest[]>([]);
-  const [statusDrafts, setStatusDrafts] = useState<Record<string, StrataOrderStatus>>({});
-  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
-  const [busyId, setBusyId] = useState("");
-  const [loginBusy, setLoginBusy] = useState(false);
-  const [accessWord, setAccessWord] = useState("");
-  const [message, setMessage] = useState("");
-  const [menuItems, setMenuItems] = useState<StrataMenuItem[]>([]);
-  const [editingMenuId, setEditingMenuId] = useState("");
-  const [menuName, setMenuName] = useState("");
-  const [menuDescription, setMenuDescription] = useState("");
-  const [menuPrice, setMenuPrice] = useState("70");
-  const [menuActive, setMenuActive] = useState(true);
-  const [menuBusy, setMenuBusy] = useState(false);
-
-  useEffect(() => {
-    if (!hasFirebaseWebConfig) { setChecking(false); setMessage("Firebase web configuration is missing."); return; }
-    let stopOrders = () => {};
-    let stopMenu = () => {};
-    let disposed = false;
-    const stopAuth = onAuthStateChanged(auth, async current => {
-      stopOrders();
-      stopMenu();
-      stopOrders = () => {};
-      stopMenu = () => {};
-      if (!current) {
-        if (!disposed) { setUser(null); setAuthorized(false); setChecking(false); }
-        return;
-      }
-      if (!disposed) { setUser(current); setChecking(true); }
-      let allowed = false;
-      try { allowed = await isAdminUser(current.uid); } catch { allowed = false; }
-      if (disposed) return;
-      setAuthorized(allowed);
-      setChecking(false);
-      if (!allowed) {
-        setMessage("That session is not authorised for Strata Operations. Enter the Operations access word to continue.");
-        await signOut(auth);
-        return;
-      }
-      setMessage("");
-      stopOrders = subscribeToAllStrataOrders(setOrders, error => setMessage(error.message));
-      stopMenu = subscribeToStrataMenu(setMenuItems, error => setMessage(error.message));
-    });
-    return () => { disposed = true; stopOrders(); stopMenu(); stopAuth(); };
-  }, []);
-
-  async function signIn(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage("");
-    setLoginBusy(true);
-    try {
-      const response = await fetch("/api/operations-login", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ word: accessWord }),
-        cache: "no-store",
-      });
-      const payload = await response.json() as { token?: string; error?: string };
-      if (!response.ok || !payload.token) {
-        setMessage(payload.error ?? "Access denied. Check the Operations access word and try again.");
-        return;
-      }
-      await signInWithCustomToken(auth, payload.token);
-      setAccessWord("");
-      setMessage("Access verified. Opening the Strata order queue…");
-    } catch (error) {
-      const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
-      setMessage(
-        code === "auth/operation-not-allowed"
-          ? "Firebase custom-token sign-in was rejected. Check the server service account and Firebase project."
-          : code === "auth/network-request-failed"
-            ? "We could not reach Firebase. Check your connection and try again."
-            : error instanceof Error && error.message
-              ? error.message
-              : "Operations sign-in failed. Check the access word and server configuration."
-      );
-    } finally {
-      setLoginBusy(false);
-    }
-  }
-
-  async function save(order: StrataOrderRequest) {
-    setBusyId(order.id);
-    setMessage("");
-    try {
-      await updateStrataOrder(order.id, statusDrafts[order.id] ?? order.status, noteDrafts[order.id] ?? order.staffNote ?? "");
-      setMessage("Request " + order.id + " updated. The customer’s My Requests page will receive the status and message update when connected.");
-    } catch {
-      setMessage("Could not update this request. Check the connection and confirm the current session has the Strata owner/staff role and the latest Firestore rules are published.");
-    } finally { setBusyId(""); }
-  }
-
-  async function saveMenu(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const price = Number(menuPrice);
-    if (!menuName.trim() || !Number.isFinite(price) || price < 0 || price > 10000) {
-      setMessage("Enter a menu item name and a valid price between P0 and P10,000.");
-      return;
-    }
-    const id = editingMenuId || slugifyMenuItem(menuName);
-    setMenuBusy(true);
-    setMessage("");
-    try {
-      const existing = menuItems.find(item => item.id === id);
-      await saveStrataMenuItem({
-        id,
-        name: menuName.trim(),
-        description: menuDescription.trim(),
-        price,
-        active: menuActive,
-        sortOrder: existing?.sortOrder ?? menuItems.length + 1,
-        updatedAt: new Date().toISOString(),
-      });
-      setEditingMenuId("");
-      setMenuName("");
-      setMenuDescription("");
-      setMenuPrice("70");
-      setMenuActive(true);
-      setMessage("Menu item saved. The public menu and order form will update automatically.");
-    } catch {
-      setMessage("Could not save the menu item. Confirm the current session has a Strata owner/staff role and publish the latest Firestore rules.");
-    } finally {
-      setMenuBusy(false);
-    }
-  }
-
-  function editMenu(item: StrataMenuItem) {
-    setEditingMenuId(item.id);
-    setMenuName(item.name);
-    setMenuDescription(item.description);
-    setMenuPrice(String(item.price));
-    setMenuActive(item.active);
-    document.getElementById("strata-menu-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  async function seedMenu() {
-    setMenuBusy(true);
-    setMessage("");
-    try {
-      const result = await seedStrataMenuIfEmpty();
-      setMessage(result === "seeded" ? "Starter menu published. You can now change names, descriptions, prices and availability below." : "A menu already exists. No existing menu items were overwritten.");
-    } catch {
-      setMessage("Could not publish the starter menu. Confirm the Strata Operations role and latest Firestore rules.");
-    } finally {
-      setMenuBusy(false);
-    }
-  }
-
-  async function removeMenuItem(item: StrataMenuItem) {
-    setMenuBusy(true);
-    setMessage("");
-    try {
-      await deleteStrataMenuItem(item.id);
-      if (editingMenuId === item.id) { setEditingMenuId(""); setMenuName(""); setMenuDescription(""); setMenuPrice("70"); setMenuActive(true); }
-      setMessage(item.name + " removed from the menu.");
-    } catch {
-      setMessage("Could not remove this item. Confirm the current session has a Strata owner/staff role and the latest Firestore rules are published.");
-    } finally {
-      setMenuBusy(false);
-    }
-  }
-
-  return <main className="strataSite strataOperationsPage">
-    <header className="strataHeader">
-      <Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link>
-      <div className="strataOrderHeaderLinks"><Link href="/account" className="strataHeaderCta">CUSTOMER VIEW</Link>{user && <button className="strataHeaderCta" type="button" onClick={() => void signOut(auth)}>SIGN OUT</button>}</div>
-    </header>
-    <section className="strataOperationsWrap">
-      <p className="strataEyebrow">STRATA · PRIVATE OPERATIONS</p>
-      <h1>THE ORDER<br/><em>QUEUE.</em></h1>
-      <p className="strataOperationsLead">Review customer requests, update their status, and leave a clear message. This is a request workflow: no price, payment or delivery promise is created automatically.</p>
-      {checking ? <p className="strataAccountEmpty">Checking access…</p> : !authorized ? <section className="strataOperationsLogin">
-        <h2>Operations sign-in</h2>
-        <p>Enter the private Strata Operations access word. Customers can still browse and send requests without signing in here.</p>
-        <form onSubmit={event => void signIn(event)}>
-          <label>Operations access word<input type="password" value={accessWord} onChange={event => setAccessWord(event.target.value)} autoComplete="current-password" required maxLength={200} autoFocus/></label>
-          <button className="strataButton strataButtonRed" type="submit" disabled={loginBusy || !hasFirebaseWebConfig}>{loginBusy ? "VERIFYING ACCESS…" : "ENTER OPERATIONS ↗"}</button>
-        </form>
-      </section> : <section className="strataOperationsQueue">
-        <div className="strataOperationsBar"><span>{orders.length} {orders.length === 1 ? "REQUEST" : "REQUESTS"}</span><span>{user?.email}</span></div>
-        {!orders.length ? <div className="strataAccountEmpty"><strong>No website requests yet.</strong><p>When a customer submits an online request, it will appear here.</p></div> : orders.map(order => <article className="strataOperationsOrder" key={order.id}>
-          <div className="strataOperationsOrderTop"><div><span className="strataEyebrow">{order.city} · {order.fulfilment}</span><h2>{order.customerName}</h2><small>{new Date(order.createdAt).toLocaleString()} · {order.id}</small></div><b data-status={order.status}>{order.status}</b></div>
-          <p className="strataOperationsItems">{order.itemsText}</p>
-          {order.deliveryLocation && <p>Delivery location: {order.deliveryLocation}</p>}
-          {order.notes && <p>Customer note: {order.notes}</p>}
-          <div className="strataOperationsControls">
-            <label>Status<select value={statusDrafts[order.id] ?? order.status} onChange={event => setStatusDrafts(prev => ({ ...prev, [order.id]: event.target.value as StrataOrderStatus }))}>{STRATA_ORDER_STATUSES.map(status => <option key={status} value={status}>{status}</option>)}</select></label>
-            <label>Message to customer<textarea rows={2} maxLength={1000} value={noteDrafts[order.id] ?? order.staffNote ?? ""} onChange={event => setNoteDrafts(prev => ({ ...prev, [order.id]: event.target.value }))} placeholder="e.g. Dumela, we’re checking availability and will confirm the final price and delivery details with you."/></label>
-            <button className="strataButton strataButtonRed" type="button" disabled={busyId === order.id} onClick={() => void save(order)}>{busyId === order.id ? "SAVING…" : "SAVE UPDATE ↗"}</button>
-          </div>
-        </article>)}
-      </section>}
-      {authorized && <section className="strataMenuAdmin">
-        <div className="strataMenuAdminHead"><div><p className="strataEyebrow">STRATA · MENU MANAGEMENT</p><h2>THE <em>MENU.</em></h2><p>Edit the meals and prices customers see. Changes update the public menu and ordering form automatically.</p></div>
-          {!menuItems.length && <button className="strataButton strataButtonRed" type="button" disabled={menuBusy} onClick={() => void seedMenu()}>{menuBusy ? "PUBLISHING…" : "PUBLISH STARTER MENU"}</button>}
-        </div>
-        {!menuItems.length && <p className="strataMenuAdminEmpty">The starter menu has not been published to the database yet. Publish it once to make the items fully editable.</p>}
-        {menuItems.map(item => <article className="strataMenuAdminItem" key={item.id}>
-          <div><span className={item.active ? "strataMenuStatus isActive" : "strataMenuStatus"}>{item.active ? "VISIBLE TO CUSTOMERS" : "HIDDEN FROM CUSTOMERS"}</span><h3>{item.name}</h3><p>{item.description || "No description added."}</p></div>
-          <strong>P{item.price.toFixed(2)}</strong>
-          <div className="strataMenuAdminActions"><button type="button" onClick={() => editMenu(item)}>EDIT</button><button type="button" disabled={menuBusy} onClick={() => void saveStrataMenuItem({ ...item, active: !item.active, updatedAt: new Date().toISOString() }).then(() => setMessage(item.name + (item.active ? " hidden from" : " shown on") + " the public menu.")).catch(() => setMessage("Could not update menu visibility. Check Firestore rules."))}>{item.active ? "HIDE" : "SHOW"}</button><button type="button" disabled={menuBusy} onClick={() => void removeMenuItem(item)}>DELETE</button></div>
-        </article>)}
-        <form id="strata-menu-editor" className="strataMenuEditor" onSubmit={event => void saveMenu(event)}>
-          <p className="strataEyebrow">{editingMenuId ? "EDIT MENU ITEM" : "ADD A MENU ITEM"}</p>
-          <label>Meal name<input required maxLength={80} value={menuName} onChange={event => setMenuName(event.target.value)} placeholder="e.g. Fish & Chips" /></label>
-          <label>Description (optional)<input maxLength={240} value={menuDescription} onChange={event => setMenuDescription(event.target.value)} placeholder="What comes with the meal?" /></label>
-          <div className="strataMenuEditorRow"><label>Price (BWP)<input required type="number" min="0" max="10000" step="0.5" value={menuPrice} onChange={event => setMenuPrice(event.target.value)} /></label><label className="strataMenuActiveToggle"><input type="checkbox" checked={menuActive} onChange={event => setMenuActive(event.target.checked)} /> Show on public menu</label></div>
-          <div className="strataMenuEditorActions"><button className="strataButton strataButtonRed" type="submit" disabled={menuBusy}>{menuBusy ? "SAVING…" : editingMenuId ? "SAVE CHANGES" : "ADD MENU ITEM"}</button>{editingMenuId && <button className="strataButton strataButtonOutline" type="button" onClick={() => { setEditingMenuId(""); setMenuName(""); setMenuDescription(""); setMenuPrice("70"); setMenuActive(true); }}>CANCEL EDIT</button>}</div>
-        </form>
-      </section>}
-      {message && <p className="strataConnectionNotice" role="status">{message}</p>}
-      <p className="strataOperationsFootnote">Only a server-issued Strata Operations session with a matching <code>admins/{'{uid}'}</code> role document can access this queue. Customer records and the operations queue are not cached for offline access.</p>
-    </section>
-    <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/">CUSTOMER STOREFRONT ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer>
-  </main>;
+import {useEffect,useMemo,useState} from "react";
+import {onAuthStateChanged,signInWithCustomToken,signOut,type User} from "firebase/auth";
+import {auth,hasFirebaseWebConfig} from "@/lib/firebase/client";
+import {isAdminUser} from "@/lib/firebase/data";
+import {STRATA_ORDER_STATUSES,subscribeToAllStrataOrders,updateStrataOrder,updateStrataOrderFinance,type StrataOrderRequest,type StrataOrderStatus} from "@/lib/firebase/strata-orders";
+import {deleteStrataMenuItem,saveStrataMenuItem,seedStrataMenuIfEmpty,slugifyMenuItem,subscribeToStrataMenu,type StrataMenuItem} from "@/lib/firebase/strata-menu";
+import {downloadStrataDocument,type StrataDocumentOrder} from "@/lib/strata/receipt";
+type Tab="overview"|"requests"|"menu"|"finance"|"receipts";
+type Draft={agreedTotal:string;amountReceived:string;paymentMethod:"Cash"|"Orange Money"|"Other";paymentReference:string};
+const money=(v:number)=>"P"+(Number(v)||0).toLocaleString("en-BW",{minimumFractionDigits:2,maximumFractionDigits:2});
+const dateText=(v?:string)=>v?new Date(v).toLocaleString("en-BW",{timeZone:"Africa/Gaborone",dateStyle:"medium",timeStyle:"short"}):"Date not recorded";
+const defaults=(o:StrataOrderRequest):Draft=>({agreedTotal:o.agreedTotal==null?"":String(o.agreedTotal),amountReceived:String(o.amountReceived??0),paymentMethod:o.paymentMethod||"Cash",paymentReference:o.paymentReference||""});
+export default function OperationsPage(){
+ const[user,setUser]=useState<User|null>(null),[authorized,setAuthorized]=useState(false),[checking,setChecking]=useState(true),[orders,setOrders]=useState<StrataOrderRequest[]>([]),[menuItems,setMenuItems]=useState<StrataMenuItem[]>([]);
+ const[statusDrafts,setStatusDrafts]=useState<Record<string,StrataOrderStatus>>({}),[noteDrafts,setNoteDrafts]=useState<Record<string,string>>({}),[financeDrafts,setFinanceDrafts]=useState<Record<string,Draft>>({});
+ const[busyId,setBusyId]=useState(""),[loginBusy,setLoginBusy]=useState(false),[accessWord,setAccessWord]=useState(""),[message,setMessage]=useState(""),[menuBusy,setMenuBusy]=useState(false),[tab,setTab]=useState<Tab>("overview");
+ const[editingMenuId,setEditingMenuId]=useState(""),[menuName,setMenuName]=useState(""),[menuDescription,setMenuDescription]=useState(""),[menuPrice,setMenuPrice]=useState("70"),[menuActive,setMenuActive]=useState(true);
+ useEffect(()=>{if(!hasFirebaseWebConfig){setChecking(false);setMessage("Firebase web configuration is missing.");return}let stopOrders=()=>{},stopMenu=()=>{},disposed=false;const stopAuth=onAuthStateChanged(auth,async current=>{stopOrders();stopMenu();stopOrders=()=>{};stopMenu=()=>{};if(!current){if(!disposed){setUser(null);setAuthorized(false);setChecking(false);setOrders([])}return}if(!disposed){setUser(current);setChecking(true)}let allowed=false;try{allowed=await isAdminUser(current.uid)}catch{allowed=false}if(disposed)return;setAuthorized(allowed);setChecking(false);if(!allowed){setMessage("That session is not authorized for Strata Admin. Enter the access word to continue.");await signOut(auth);return}setMessage("");stopOrders=subscribeToAllStrataOrders(setOrders,e=>setMessage(e.message));stopMenu=subscribeToStrataMenu(setMenuItems,e=>setMessage(e.message))});return()=>{disposed=true;stopOrders();stopMenu();stopAuth()}},[]);
+ async function signIn(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setMessage("");setLoginBusy(true);try{const r=await fetch("/api/operations-login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({word:accessWord}),cache:"no-store"});const p=await r.json() as {token?:string;error?:string};if(!r.ok||!p.token){setMessage(p.error||"Access denied. Check the access word.");return}await signInWithCustomToken(auth,p.token);setAccessWord("");setMessage("Access verified. Loading Strata Admin…")}catch(err){const code=typeof err==="object"&&err&&"code"in err?String((err as {code?:unknown}).code):"";setMessage(code==="auth/operation-not-allowed"?"Firebase custom-token sign-in was rejected. Check the server service account and Firebase project.":code==="auth/network-request-failed"?"We could not reach Firebase. Check your connection.":err instanceof Error?err.message:"Admin sign-in failed.")}finally{setLoginBusy(false)}}
+ async function saveRequest(o:StrataOrderRequest){setBusyId(o.id);setMessage("");try{await updateStrataOrder(o.id,statusDrafts[o.id]??o.status,noteDrafts[o.id]??o.staffNote??"");setMessage("Request "+o.id.slice(0,8).toUpperCase()+" updated. Customer updates appear in My Requests.")}catch{setMessage("Request update was not saved. Check connectivity and the latest Firestore rules.")}finally{setBusyId("")}}
+ function draft(o:StrataOrderRequest){return financeDrafts[o.id]??defaults(o)}
+ async function saveFinance(o:StrataOrderRequest){const d=draft(o),total=Number(d.agreedTotal),received=Number(d.amountReceived);if(d.agreedTotal.trim()===""||!Number.isFinite(total)||total<0||total>100000){setMessage("Enter the final amount agreed with the customer.");return}if(!Number.isFinite(received)||received<0||received>total){setMessage("Recorded payments must be between P0 and the agreed total.");return}setBusyId(o.id);setMessage("");try{await updateStrataOrderFinance(o.id,{agreedTotal:total,amountReceived:received,paymentMethod:d.paymentMethod,paymentReference:d.paymentReference});setFinanceDrafts(v=>{const n={...v};delete n[o.id];return n});setMessage("Finance record saved. Collections are staff-entered records, not live payment confirmations.")}catch{setMessage("Finance record was not saved. Check the latest Firestore rules and admin session.")}finally{setBusyId("")}}
+ async function saveMenu(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const price=Number(menuPrice);if(!menuName.trim()||!Number.isFinite(price)||price<0||price>10000){setMessage("Enter a menu name and valid price from P0 to P10,000.");return}const id=editingMenuId||slugifyMenuItem(menuName);setMenuBusy(true);setMessage("");try{const old=menuItems.find(i=>i.id===id);await saveStrataMenuItem({id,name:menuName.trim(),description:menuDescription.trim(),price,active:menuActive,sortOrder:old?.sortOrder??menuItems.length+1,updatedAt:new Date().toISOString()});setEditingMenuId("");setMenuName("");setMenuDescription("");setMenuPrice("70");setMenuActive(true);setMessage("Menu item saved. The public menu and order form update automatically.")}catch{setMessage("Could not save menu item. Check the Operations role and Firestore rules.")}finally{setMenuBusy(false)}}
+ function editMenu(i:StrataMenuItem){setEditingMenuId(i.id);setMenuName(i.name);setMenuDescription(i.description);setMenuPrice(String(i.price));setMenuActive(i.active);document.getElementById("strata-menu-editor")?.scrollIntoView({behavior:"smooth",block:"start"})}
+ async function seedMenu(){setMenuBusy(true);try{const result=await seedStrataMenuIfEmpty();setMessage(result==="seeded"?"Starter menu published.":"A menu already exists; no items were overwritten.")}catch{setMessage("Could not publish starter menu. Check Firestore permissions.")}finally{setMenuBusy(false)}}
+ async function removeMenu(i:StrataMenuItem){if(!window.confirm("Remove "+i.name+" from the menu?"))return;setMenuBusy(true);try{await deleteStrataMenuItem(i.id);setMessage(i.name+" removed from the public menu.")}catch{setMessage("Could not remove menu item. Check Firestore permissions.")}finally{setMenuBusy(false)}}
+ const live=useMemo(()=>orders.filter(o=>o.status!=="Cancelled"),[orders]);
+ const metrics=useMemo(()=>{const estimate=live.reduce((s,o)=>s+(Number(o.menuEstimate)||0),0),agreed=live.reduce((s,o)=>s+(Number(o.agreedTotal)||0),0),received=live.reduce((s,o)=>s+(Number(o.amountReceived)||0),0),balance=live.reduce((s,o)=>s+Math.max(0,(Number(o.agreedTotal)||0)-(Number(o.amountReceived)||0)),0),completed=live.filter(o=>o.status==="Completed").reduce((s,o)=>s+(Number(o.agreedTotal)||0),0),recent=orders.filter(o=>Date.parse(o.createdAt||"")>=Date.now()-30*86400000),recentReceived=recent.reduce((s,o)=>s+(Number(o.amountReceived)||0),0);return{estimate,agreed,received,balance,completed,recent:recent.length,recentReceived,priced:live.filter(o=>o.agreedTotal!=null).length}},[live,orders]);
+ const receipts=useMemo(()=>orders.filter(o=>(Number(o.amountReceived)||0)>0).sort((a,b)=>(b.paymentUpdatedAt||b.createdAt).localeCompare(a.paymentUpdatedAt||a.createdAt)),[orders]),invoices=useMemo(()=>orders.filter(o=>o.agreedTotal!=null).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)),[orders]);
+ const tabs:Array<{id:Tab;label:string}>=[{id:"overview",label:"OVERVIEW"},{id:"requests",label:"REQUESTS"},{id:"menu",label:"MENU & PRICES"},{id:"finance",label:"FINANCES"},{id:"receipts",label:"RECEIPTS"}];
+ const nav=<nav className="strataAdminNav" aria-label="Admin sections">{tabs.map(t=><button key={t.id} type="button" aria-pressed={tab===t.id} onClick={()=>setTab(t.id)}>{t.label}</button>)}</nav>;
+ const stats=<div className="strataAdminStats"><article className="strataAdminStat"><span>Menu estimate · not revenue</span><strong>{money(metrics.estimate)}</strong></article><article className="strataAdminStat"><span>Agreed order value</span><strong>{money(metrics.agreed)}</strong></article><article className="strataAdminStat"><span>Recorded collections</span><strong>{money(metrics.received)}</strong></article><article className="strataAdminStat"><span>Outstanding balance</span><strong>{money(metrics.balance)}</strong></article></div>;
+ return <main className="strataSite strataOperationsPage"><header className="strataHeader"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="48" height="48"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><div className="strataOrderHeaderLinks"><Link href="/" className="strataHeaderCta">CUSTOMER VIEW</Link>{user&&<button className="strataHeaderCta" type="button" onClick={()=>void signOut(auth)}>SIGN OUT</button>}</div></header>
+ <section className="strataOperationsWrap"><p className="strataEyebrow">STRATA · PRIVATE ADMIN</p><h1>YOUR BUSINESS.<br/><em>IN VIEW.</em></h1><p className="strataOperationsLead">Manage requests, update the menu, reconcile payments and issue business documents.</p>
+ {checking?<p className="strataAccountEmpty">Checking admin access…</p>:!authorized?<section className="strataOperationsLogin"><h2>Admin sign-in</h2><p>Enter the private one-word Strata admin access word. Customers can browse and submit requests without signing in.</p><form onSubmit={e=>void signIn(e)}><label>One-word admin access<input type="password" value={accessWord} onChange={e=>setAccessWord(e.target.value)} autoComplete="current-password" required maxLength={200} autoFocus/></label><button className="strataButton strataButtonRed" type="submit" disabled={loginBusy||!hasFirebaseWebConfig}>{loginBusy?"CHECKING ACCESS…":"ENTER ADMIN ↗"}</button></form></section>:<>
+ <div className="strataOperationsBar"><span>{orders.length} REQUESTS · {menuItems.length} MENU ITEMS</span><span>{user?.email||"AUTHORIZED ADMIN"}</span></div>{nav}
+ {tab==="overview"&&<section className="strataAdminOverview">{stats}<section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">OWNER ACTIONS</p><h2>What needs attention?</h2></div></div><div className="strataAdminStats"><article className="strataAdminStat"><span>New requests</span><strong>{orders.filter(o=>o.status==="New").length}</strong></article><article className="strataAdminStat"><span>In progress</span><strong>{orders.filter(o=>["Confirmed","Preparing","Ready for pickup","Out for delivery"].includes(o.status)).length}</strong></article><article className="strataAdminStat"><span>Completed</span><strong>{orders.filter(o=>o.status==="Completed").length}</strong></article><article className="strataAdminStat"><span>Requests · 30 days</span><strong>{metrics.recent}</strong></article></div><div className="strataFinanceActions" style={{marginTop:16}}><button className="primary" onClick={()=>setTab("requests")}>REVIEW REQUESTS ↗</button><button onClick={()=>setTab("menu")}>EDIT MENU & PRICES ↗</button><button onClick={()=>setTab("finance")}>OPEN FINANCES ↗</button></div></section><section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">RECENT ACTIVITY</p><h2>Latest requests</h2></div></div>{orders.length?<table className="strataAdminTable"><thead><tr><th>Customer / branch</th><th>Request</th><th>Status</th><th>Created</th></tr></thead><tbody>{orders.slice(0,8).map(o=><tr key={o.id}><td><strong>{o.customerName}</strong><br/><small>{o.city}</small></td><td>{o.itemsText.split("\n")[0]}</td><td><span className="strataAdminPill">{o.status}</span></td><td>{dateText(o.createdAt)}</td></tr>)}</tbody></table>:<p className="strataAdminEmpty">No customer requests have arrived yet.</p>}</section></section>}
+ {tab==="requests"&&<section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">CUSTOMER WORKFLOW</p><h2>Order requests</h2><p>Confirm the final price with the customer before recording an agreed total.</p></div><span>{orders.length} total</span></div>{orders.length?orders.map(o=><article className="strataFinanceOrder" key={o.id}><div className="strataFinanceOrderHead"><div><strong>{o.customerName} · {o.city}</strong><small>{o.fulfilment} · {dateText(o.createdAt)} · Ref {o.id.slice(0,8).toUpperCase()}</small></div><span className="strataAdminPill">{o.status}</span></div><p className="strataOperationsItems">{o.itemsText}</p>{o.deliveryLocation&&<p>Delivery location: {o.deliveryLocation}</p>}{o.notes&&<p>Customer note: {o.notes}</p>}<div className="strataFinanceForm"><label>Status<select value={statusDrafts[o.id]??o.status} onChange={e=>setStatusDrafts(v=>({...v,[o.id]:e.target.value as StrataOrderStatus}))}>{STRATA_ORDER_STATUSES.map(s=><option key={s} value={s}>{s}</option>)}</select></label><label>Message to customer<textarea rows={2} maxLength={1000} value={noteDrafts[o.id]??o.staffNote??""} onChange={e=>setNoteDrafts(v=>({...v,[o.id]:e.target.value}))}/></label><div className="full strataFinanceActions"><button className="primary" type="button" disabled={busyId===o.id} onClick={()=>void saveRequest(o)}>{busyId===o.id?"SAVING…":"SAVE REQUEST UPDATE"}</button><button type="button" onClick={()=>{setTab("finance");setFinanceDrafts(v=>({...v,[o.id]:defaults(o)}))}}>RECORD PRICE / PAYMENT ↗</button></div></div></article>):<p className="strataAdminEmpty">No customer requests yet.</p>}</section>}
+ {tab==="menu"&&<section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">PUBLIC MENU</p><h2>Menu & prices</h2><p>The existing starter menu stays simple and editable.</p></div><span>{menuItems.length} listed</span></div>{!menuItems.length&&<div className="strataAdminEmpty"><p>The starter menu is not yet published.</p><button className="strataReceiptButton primary" type="button" disabled={menuBusy} onClick={()=>void seedMenu()}>{menuBusy?"PUBLISHING…":"PUBLISH STARTER MENU"}</button></div>}{menuItems.map(i=><article className="strataFinanceOrder" key={i.id}><div className="strataFinanceOrderHead"><div><strong>{i.name}</strong><small>{i.description||"No description"} · {i.active?"Visible to customers":"Hidden from customers"}</small></div><strong>{money(i.price)}</strong></div><div className="strataFinanceActions" style={{marginTop:12}}><button type="button" onClick={()=>editMenu(i)}>EDIT</button><button type="button" disabled={menuBusy} onClick={()=>void saveStrataMenuItem({...i,active:!i.active,updatedAt:new Date().toISOString()}).then(()=>setMessage(i.name+(i.active?" hidden from":" shown on")+" the public menu.")).catch(()=>setMessage("Could not update menu visibility. Check Firestore rules."))}>{i.active?"HIDE":"SHOW"}</button><button type="button" disabled={menuBusy} onClick={()=>void removeMenu(i)}>DELETE</button></div></article>)}<form id="strata-menu-editor" className="strataFinanceForm" onSubmit={e=>void saveMenu(e)}><label>Menu item name<input required maxLength={80} value={menuName} onChange={e=>setMenuName(e.target.value)}/></label><label>Price (BWP)<input required type="number" min="0" max="10000" step="0.5" value={menuPrice} onChange={e=>setMenuPrice(e.target.value)}/></label><label className="full">Description (optional)<input maxLength={240} value={menuDescription} onChange={e=>setMenuDescription(e.target.value)}/></label><label className="full"><span><input type="checkbox" checked={menuActive} onChange={e=>setMenuActive(e.target.checked)}/> Show on public menu</span></label><div className="full strataFinanceActions"><button className="primary" type="submit" disabled={menuBusy}>{menuBusy?"SAVING…":editingMenuId?"SAVE MENU CHANGES":"ADD MENU ITEM"}</button>{editingMenuId&&<button type="button" onClick={()=>{setEditingMenuId("");setMenuName("");setMenuDescription("");setMenuPrice("70");setMenuActive(true)}}>CANCEL EDIT</button>}</div></form></section>}
+ {tab==="finance"&&<section className="strataFinancePanel">{stats}<section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">30-DAY SNAPSHOT</p><h2>Recorded business activity</h2><p>Manual staff entries only. Strata does not collect online payments or verify Orange Money transactions.</p></div></div><div className="strataAdminStats"><article className="strataAdminStat"><span>Requests · 30 days</span><strong>{metrics.recent}</strong></article><article className="strataAdminStat"><span>Collections · 30 days</span><strong>{money(metrics.recentReceived)}</strong></article><article className="strataAdminStat"><span>Orders with agreed totals</span><strong>{metrics.priced}</strong></article><article className="strataAdminStat"><span>Completed agreed value</span><strong>{money(metrics.completed)}</strong></article></div></section><section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">PAYMENT RECONCILIATION</p><h2>Agreed totals & collections</h2><p>Enter final agreed amount and cumulative money received. Update the cumulative amount when another payment arrives.</p></div></div>{live.map(o=>{const d=draft(o),total=Number(d.agreedTotal)||0;return <article className="strataFinanceOrder" key={o.id}><div className="strataFinanceOrderHead"><div><strong>{o.customerName} · {o.city}</strong><small>Ref {o.id.slice(0,8).toUpperCase()} · {o.status} · {dateText(o.createdAt)}</small></div><span className="strataAdminPill">{o.agreedTotal==null?"PRICE NOT CONFIRMED":"AGREED "+money(o.agreedTotal)}</span></div><div className="strataFinanceTotals"><span>Menu estimate: {o.menuEstimate==null?"Not captured":money(o.menuEstimate)}</span><span>Received: {money(Number(o.amountReceived)||0)}</span><span>Balance: {o.agreedTotal==null?"—":money(Math.max(0,(Number(o.agreedTotal)||0)-(Number(o.amountReceived)||0)))}</span></div><div className="strataFinanceForm"><label>Final agreed total (BWP)<input type="number" min="0" max="100000" step="0.01" value={d.agreedTotal} onChange={e=>setFinanceDrafts(v=>({...v,[o.id]:{...d,agreedTotal:e.target.value}}))}/></label><label>Total received to date (BWP)<input type="number" min="0" max={total||100000} step="0.01" value={d.amountReceived} onChange={e=>setFinanceDrafts(v=>({...v,[o.id]:{...d,amountReceived:e.target.value}}))}/></label><label>Payment method<select value={d.paymentMethod} onChange={e=>setFinanceDrafts(v=>({...v,[o.id]:{...d,paymentMethod:e.target.value as Draft["paymentMethod"]}}))}><option>Cash</option><option>Orange Money</option><option>Other</option></select></label><label>Payment reference (optional)<input maxLength={100} value={d.paymentReference} onChange={e=>setFinanceDrafts(v=>({...v,[o.id]:{...d,paymentReference:e.target.value}}))}/></label><div className="full strataFinanceActions"><button className="primary" type="button" disabled={busyId===o.id} onClick={()=>void saveFinance(o)}>{busyId===o.id?"SAVING…":"SAVE FINANCE RECORD"}</button>{o.agreedTotal!=null&&<button type="button" onClick={()=>downloadStrataDocument(o as StrataDocumentOrder,"invoice")}>DOWNLOAD INVOICE PDF</button>}{(Number(o.amountReceived)||0)>0&&<button type="button" onClick={()=>downloadStrataDocument(o as StrataDocumentOrder,"receipt")}>DOWNLOAD PAYMENT RECEIPT</button>}</div></div></article>})}</section></section>}
+ {tab==="receipts"&&<section className="strataReceiptPanel"><section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">BUSINESS DOCUMENTS</p><h2>Invoices</h2><p>Generated only from staff-confirmed order totals.</p></div><span>{invoices.length}</span></div>{invoices.length?invoices.map(o=><article className="strataReceiptRow" key={o.id}><div><strong>{o.receiptNumber||"STR-"+o.id.slice(0,8).toUpperCase()} · {o.customerName}</strong><small>{o.city} · {money(Number(o.agreedTotal)||0)} · {dateText(o.createdAt)}</small></div><button className="strataReceiptButton" type="button" onClick={()=>downloadStrataDocument(o as StrataDocumentOrder,"invoice")}>DOWNLOAD INVOICE PDF</button></article>):<p className="strataAdminEmpty">Invoices appear after an agreed total is saved.</p>}</section><section className="strataAdminSection"><div className="strataAdminSectionHead"><div><p className="strataEyebrow">PAYMENTS RECORDED</p><h2>Payment receipts</h2><p>These documents reflect admin-entered records, not bank or mobile-money verification.</p></div><span>{receipts.length}</span></div>{receipts.length?receipts.map(o=><article className="strataReceiptRow" key={o.id}><div><strong>{o.receiptNumber||"STR-"+o.id.slice(0,8).toUpperCase()} · {o.customerName}</strong><small>{money(Number(o.amountReceived)||0)} received · {o.paymentMethod||"Method not recorded"} · {dateText(o.paymentUpdatedAt)}</small></div><button className="strataReceiptButton primary" type="button" onClick={()=>downloadStrataDocument(o as StrataDocumentOrder,"receipt")}>DOWNLOAD RECEIPT PDF</button></article>):<p className="strataAdminEmpty">No payments have been manually recorded yet.</p>}</section></section>}
+ </>}
+ {message&&<p className="strataConnectionNotice" role="status">{message}</p>}<p className="strataOperationsFootnote">Admin access uses the server-issued Operations session and Firebase owner/staff role. Finance records are manually reconciled. Private records are not cached offline.</p></section>
+ <footer className="strataFooter"><Link href="/" className="strataBrand"><img src="/strata-brand-logo.svg" alt="" width="42" height="42"/><span><strong>STRATA</strong><small>SA’O BITSA</small></span></Link><Link href="/">CUSTOMER STOREFRONT ↗</Link><small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small></footer></main>;
 }

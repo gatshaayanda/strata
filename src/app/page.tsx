@@ -18,6 +18,7 @@ export default function Home() {
           <a href="#menu">THE MENU</a>
           <a href="#locations">CHOOSE A BRANCH</a>
           <Link href="/account">MY REQUESTS</Link>
+          <Link href="/admin">ADMIN</Link>
         </nav>
         <Link className="strataHeaderCta" href="#locations">START AN ORDER <span>↗</span></Link>
       </header>
@@ -72,6 +73,7 @@ export default function Home() {
         <span>FISH. CHIPS. GOOD TIMES.</span>
         <Link href="#locations">CHOOSE A BRANCH ↗</Link>
         <Link href="/account">MY REQUESTS ↗</Link>
+        <Link href="/admin">ADMIN ↗</Link>
         <small>© {new Date().getFullYear()} STRATA SA’O BITSA · BOTSWANA</small>
       </footer>
 

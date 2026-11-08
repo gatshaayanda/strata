@@ -1292,3 +1292,41 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
  .strataCompactPromise{padding:28px 18px!important}
  .strataCompactPromise h2{font-size:clamp(2.5rem,11vw,3.6rem)}
 }
+
+
+/* Strata private admin dashboard */
+.strataAdminNav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;padding:8px;border:1px solid rgba(227,38,46,.22);background:#191615}
+.strataAdminNav button{min-height:42px;padding:10px 15px;border:1px solid #4b4039;background:transparent;color:#f5eee5;font:900 .68rem/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer}
+.strataAdminNav button[aria-pressed="true"]{background:#e3262e;border-color:#e3262e;color:#fff}
+.strataAdminOverview,.strataFinancePanel,.strataReceiptPanel{display:grid;gap:18px}
+.strataAdminStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.strataAdminStat{padding:17px;background:#f5f1e9;color:#171514;border-top:3px solid #e3262e;min-width:0}
+.strataAdminStat span{display:block;color:#756a60;font-size:.61rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.strataAdminStat strong{display:block;margin-top:9px;font-size:clamp(1.35rem,3vw,2rem);line-height:1.05;overflow-wrap:anywhere}
+.strataAdminSection{padding:20px;background:#f5f1e9;color:#171514;min-width:0}
+.strataAdminSectionHead{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:15px}
+.strataAdminSectionHead h2{margin:4px 0 0;font-size:1.35rem}
+.strataAdminSectionHead p{color:#6b625a;font-size:.78rem;line-height:1.6}
+.strataAdminTable{width:100%;border-collapse:collapse;font-size:.78rem}
+.strataAdminTable th,.strataAdminTable td{padding:11px 9px;border-bottom:1px solid #d9d0c5;text-align:left;vertical-align:top}
+.strataAdminTable th{font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#766b61}
+.strataAdminPill{display:inline-block;padding:5px 8px;background:#e7dfd5;color:#40362e;font-size:.6rem;font-weight:900;text-transform:uppercase}
+.strataFinanceForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px;padding-top:15px;border-top:1px solid #d9d0c5}
+.strataFinanceForm label{display:grid;gap:6px;font-size:.7rem;font-weight:900}
+.strataFinanceForm input,.strataFinanceForm select,.strataFinanceForm textarea{width:100%;min-width:0;min-height:42px;padding:9px;border:1px solid #bdb3a8;background:#fff;color:#171514;font:inherit}
+.strataFinanceForm .full{grid-column:1/-1}
+.strataFinanceActions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.strataFinanceActions button,.strataReceiptButton{min-height:38px;padding:9px 12px;border:1px solid #bdb3a8;background:#fff;color:#171514;font-size:.65rem;font-weight:950;cursor:pointer}
+.strataFinanceActions button.primary,.strataReceiptButton.primary{background:#e3262e;border-color:#e3262e;color:#fff}
+.strataFinanceOrder{padding:17px 0;border-top:1px solid #d9d0c5}
+.strataFinanceOrder:first-of-type{border-top:0}
+.strataFinanceOrderHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.strataFinanceOrderHead strong{font-size:.95rem}
+.strataFinanceOrderHead small{display:block;margin-top:5px;color:#70675e;font-size:.68rem}
+.strataFinanceTotals{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px;color:#534b44;font-size:.72rem}
+.strataReceiptRow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid #d9d0c5}
+.strataReceiptRow>div{display:grid;gap:4px;min-width:0}
+.strataReceiptRow small{color:#6f655c;font-size:.68rem}
+.strataAdminEmpty{padding:18px;background:#eee7de;color:#62574e;font-size:.82rem;line-height:1.6}
+.strataOperationsWrap .strataAdminNav{position:sticky;top:8px;z-index:20}
+@media(max-width:760px){.strataAdminStats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.strataAdminStat{padding:13px}.strataAdminNav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.strataAdminNav button{padding:9px 5px;font-size:.57rem}.strataAdminSection{padding:14px}.strataAdminSectionHead{align-items:flex-start;flex-direction:column}.strataFinanceForm{grid-template-columns:1fr}.strataFinanceForm .full{grid-column:auto}.strataReceiptRow{align-items:flex-start;flex-direction:column}.strataAdminTable{display:block;overflow-x:auto;white-space:nowrap}}
