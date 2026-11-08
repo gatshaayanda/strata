@@ -1233,7 +1233,7 @@ button.plugProductAction{width:100%;align-items:center;background:transparent;bo
  .strataCompactPromise h2{font-size:clamp(2.8rem,12vw,4rem)}
  .strataCompactPromise>div:last-child>p{font-size:.8rem;margin:8px 0}
  .strataCompactPromise .strataButton{width:100%;margin-top:8px}
- .strataMobileNav{position:fixed;z-index:900;left:10px;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:7px 5px calc(7px + env(safe-area-inset-bottom));background:rgba(18,17,17,.97);border:1px solid #49413c;box-shadow:0 8px 28px #0008;backdrop-filter:blur(12px)}
+ .strataMobileNav{position:fixed;z-index:900;left:10px;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:7px 5px calc(7px + env(safe-area-inset-bottom));background:rgba(18,17,17,.97);border:1px solid #49413c;box-shadow:0 8px 28px #0008;backdrop-filter:blur(12px)}
  .strataMobileNav a{display:grid;justify-items:center;gap:3px;min-width:0;padding:4px 1px;color:#e8e1d9;font-size:.48rem;font-weight:900;letter-spacing:.04em}
  .strataMobileNav a span{font-size:1.15rem;line-height:1}
  .strataMobileNav a:focus-visible{outline:2px solid #ff777b;outline-offset:2px}
