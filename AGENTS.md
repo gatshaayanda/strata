@@ -141,3 +141,10 @@ Use evidence to reduce friction, not to justify arbitrary simplification. The fo
 - Remove repeated explanatory sections, redundant per-item order CTAs, oversized image galleries/video blocks and excess vertical padding from the homepage. Keep essential request/price disclaimers concise.
 - Maintain responsive mobile navigation without covering the approved PWA install card or changing the protected installation mechanism.
 - Verify the homepage at narrow mobile widths and desktop widths; inspect the actual rendered page, not only the committed JSX/CSS.
+
+
+## QA checkpoint refresh — 2026-11-08
+- Fresh QA deployment requested against the current main snapshot.
+- This checkpoint does not authorize changes to the protected PWA installation mechanism.
+- QA focus: compact homepage at narrow mobile and desktop widths; branch/order entry points; live admin-managed menu; customer-request flow; verify the installed PWA separately from browser mode.
+- Do not treat a GitHub push or successful build as proof of production deployment or rendered visual QA.
