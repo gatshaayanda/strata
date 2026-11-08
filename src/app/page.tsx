@@ -82,6 +82,7 @@ export default function Home() {
         <a href="#menu"><span>≡</span>MENU</a>
         <a href="#locations"><span>＋</span>ORDER</a>
         <Link href="/account"><span>◎</span>MY REQUESTS</Link>
+        <Link href="/admin"><span>⚙</span>ADMIN</Link>
       </nav>
     </main>
   );
